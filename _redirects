@@ -1,0 +1,4 @@
+# Netlify redirects file
+# Proxy API requests to deployed Render backend
+/api/*  https://edutrack-backend.onrender.com/api/:splat  200!
+/health https://edutrack-backend.onrender.com/health       200!

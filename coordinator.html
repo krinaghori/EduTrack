@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Block Resource Coordinator Dashboard – EduTrack</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class='brand-link' href='/'>
+        <div class="brand-logo-icon" style="background:linear-gradient(135deg, #0284c7 0%, #0f172a 100%);">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1>EduTrack</h1>
+          <span>Block Resource Coordinator (BRC) Portal</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <div class="header-user-badge">
+          <i class="fa-solid fa-user-check"></i>
+          <span>Shri R.K. Mehta</span>
+          <span class="role-tag" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">BRC Coordinator</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Breadcrumb Bar -->
+    <div class="breadcrumb-bar">
+      <a href='/'><i class="fa-solid fa-house"></i> Home</a>
+      <span class="separator">/</span>
+      <span class="current">Coordinator Dashboard</span>
+      <span class="separator">/</span>
+      <span class="current" id="coordClassBreadcrumb">Assigned Class: Class 4</span>
+    </div>
+
+    <!-- Assigned-Class Access Disclaimer Banner -->
+    <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:var(--radius-md); padding:14px 18px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <i class="fa-solid fa-shield-halved" style="font-size:1.4rem; color:#0284c7;"></i>
+        <div>
+          <strong style="color:#0369a1; font-size:0.9rem;">Cluster Authorization: Block 02 Assigned Classrooms</strong>
+          <p style="font-size:0.78rem; color:#0284c7; margin-top:2px;">
+            Role-Based Access Control Active: You are strictly authorized to inspect assigned classrooms: <strong>Class 4, Class 5, and Class 6</strong>. Unassigned classes are restricted.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Assigned Class Selector -->
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label for="coordinatorClassSelect" style="font-size:0.84rem; font-weight:700; color:#0369a1; margin-bottom:0;">Assigned Class:</label>
+        <select id="coordinatorClassSelect" class="form-control" style="width:auto; padding:6px 14px; font-weight:700; border-color:#7dd3fc;">
+          <option value="Class 4" selected>Class 4 (Primary Block)</option>
+          <option value="Class 5">Class 5 (Primary Block)</option>
+          <option value="Class 6">Class 6 (Upper Primary)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Dashboard Title -->
+    <div class="dashboard-header">
+      <div class="header-title-box">
+        <h2>Assigned Classroom Learning Gap Review &amp; Pedagogical Interventions</h2>
+        <p id="coordSubtitle">Academic audit, foundational topic weaknesses, and cluster intervention logs for Class 4</p>
+      </div>
+    </div>
+
+    <!-- Metrics Cards Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Assigned Class Roster</span>
+          <h3 id="statCoordStudents">5 Students</h3>
+          <div class="stat-sub"><i class="fa-solid fa-users text-success"></i> Monitored Cohort</div>
+        </div>
+        <div class="stat-icon-box teal"><i class="fa-solid fa-user-group"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Classroom Average</span>
+          <h3 id="statCoordClassAvg">64.8%</h3>
+          <div class="stat-sub" id="statCoordBadge">
+            <span class="badge badge-yellow">Developing Band</span>
+          </div>
+        </div>
+        <div class="stat-icon-box blue"><i class="fa-solid fa-chart-line"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Students Needing Support</span>
+          <h3 id="statCoordHelpCount" style="color:var(--perf-red);">1</h3>
+          <div class="stat-sub"><i class="fa-solid fa-triangle-exclamation text-danger"></i> Below 40% threshold</div>
+        </div>
+        <div class="stat-icon-box red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Logged Interventions</span>
+          <h3 id="statCoordAdviceCount">3</h3>
+          <div class="stat-sub"><i class="fa-solid fa-clipboard-check text-success"></i> Cluster Directives</div>
+        </div>
+        <div class="stat-icon-box green"><i class="fa-solid fa-clipboard-list"></i></div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid-two">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-chart-column" style="color:#0284c7;"></i> Subject-Wise Mastery in Selected Class</h3>
+            <p>Average marks across 5 primary subjects</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartCoordSubjects"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-arrow-trend-up" style="color:var(--perf-green);"></i> Progress vs Previous Assessments</h3>
+            <p>Score trajectory: Baseline &rarr; Unit 1 &rarr; Unit 2 &rarr; Midterm</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartCoordTrend"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic-Wise Strengths, Learning Gaps & Common Difficulties -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3><i class="fa-solid fa-magnifying-glass" style="color:var(--primary-navy);"></i> Common Learning Gaps &amp; Academic Difficulties</h3>
+          <p>Identified conceptual bottlenecks requiring cluster-level instructional adjustments:</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:18px;">
+        <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius-md); padding:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:#991b1b; margin-bottom:6px;">
+            <i class="fa-solid fa-bug"></i> Critical Deficit: Math Multiplication Tables &amp; Division
+          </h4>
+          <p style="font-size:0.84rem; color:#7f1d1d; line-height:1.5;">
+            Students in the bottom quartile rely on finger-counting for tables 6 through 9 and fail to grasp division as repeated subtraction.
+          </p>
+          <div style="margin-top:10px; font-size:0.78rem; font-weight:700; color:#b91c1c;">
+            Recommended: Daily 10-minute dot array matrix drills + abacus kit practice.
+          </div>
+        </div>
+
+        <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-md); padding:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:#92400e; margin-bottom:6px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Language Gap: Matra Confusion (હ્રસ્વ 'િ' vs દીર્ઘ 'ી')
+          </h4>
+          <p style="font-size:0.84rem; color:#78350f; line-height:1.5;">
+            Gujarati and Hindi writing shows persistent vowel matra swaps altering word meanings (e.g. દિન vs દીન).
+          </p>
+          <div style="margin-top:10px; font-size:0.78rem; font-weight:700; color:#b45309;">
+            Recommended: Barakhadi audio rhymes and tactile sandpaper letter tracing.
+          </div>
+        </div>
+
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius-md); padding:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:#166534; margin-bottom:6px;">
+            <i class="fa-solid fa-check-circle"></i> Commendable Mastery: EVS Plant &amp; Living World
+          </h4>
+          <p style="font-size:0.84rem; color:#14532d; line-height:1.5;">
+            High student engagement in plant photosynthesis and community helper roles (Class mastery exceeds 82%).
+          </p>
+          <div style="margin-top:10px; font-size:0.78rem; font-weight:700; color:#15803d;">
+            Recommended: Leverage nature projects to cross-teach vocabulary and measurements.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dedicated Advice and Intervention Section -->
+    <div class="advice-box-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="font-size:1.25rem; font-weight:800; color:#0f766e; display:flex; align-items:center; gap:10px;">
+            <i class="fa-solid fa-clipboard-user"></i> Coordinator Practical Advice &amp; Teaching Interventions
+          </h3>
+          <p style="font-size:0.84rem; color:#0d9488; margin-top:2px;">
+            Direct actionable guidance issued to the class teacher and school leadership:
+          </p>
+        </div>
+        <span class="badge badge-blue">Official BRC Directive</span>
+      </div>
+
+      <!-- Advice Quick Action Shortcuts -->
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="insertAdviceTemplate('Conduct additional 15-min practice sessions for weak foundational numeracy topics.')">
+          + Additional Practice
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="insertAdviceTemplate('Use visual learning aids (abacus beads, base-10 blocks) to explain difficult concepts.')">
+          + Visual Learning Aids
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="insertAdviceTemplate('Arrange peer-assisted remedial classes for students scoring below 40%.')">
+          + Remedial Sessions
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="insertAdviceTemplate('Provide individual attention and reduce timed quiz anxiety for persistent gap cases.')">
+          + Individual Attention
+        </button>
+      </div>
+
+      <!-- Advice Entry Form -->
+      <form id="coordinatorAdviceForm">
+        <div class="form-group">
+          <label for="coordinatorAdviceText" style="color:#0f766e;">Write Directive / Pedagogical Advice for <span id="adviceClassLabel">Class 4</span>:</label>
+          <textarea id="coordinatorAdviceText" class="form-control" rows="3" placeholder="Enter practical advice, teaching strategies, or remedial schedules for teachers..." required></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end;">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Save &amp; Issue Directive
+          </button>
+        </div>
+      </form>
+
+      <!-- Previously Saved Recommendations List -->
+      <hr style="margin:24px 0; border:0; border-top:1px solid #99f6e4;">
+
+      <h4 style="font-size:1rem; font-weight:700; color:#0f766e; margin-bottom:12px;">
+        <i class="fa-solid fa-clock-rotate-left"></i> Previously Saved Recommendations &amp; Directives Log:
+      </h4>
+
+      <div id="coordinatorAdviceHistoryList">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1320px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <strong>EduTrack</strong> &mdash; Block Resource Coordinator Portal
+      </div>
+      <div>
+        BRC Cluster Oversight &bull; District Gandhinagar, Gujarat
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let chartCoordSubjects = null;
+    let chartCoordTrend = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('coordinatorClassSelect');
+      select.addEventListener('change', (e) => {
+        updateCoordinatorView(e.target.value);
+      });
+
+      // Advice form submission
+      document.getElementById('coordinatorAdviceForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = document.getElementById('coordinatorAdviceText').value.trim();
+        const cClass = select.value;
+        if (!text) return;
+
+        window.EduTrack.addCoordinatorAdvice(cClass, text);
+        document.getElementById('coordinatorAdviceText').value = '';
+        renderAdviceHistory(cClass);
+        showToast(`Directive successfully issued for ${cClass}!`, 'success');
+      });
+
+      updateCoordinatorView('Class 4');
+    });
+
+    function insertAdviceTemplate(text) {
+      const area = document.getElementById('coordinatorAdviceText');
+      area.value = (area.value ? area.value + " " : "") + text;
+      area.focus();
+    }
+
+    function updateCoordinatorView(className) {
+      document.getElementById('coordClassBreadcrumb').textContent = `Assigned Class: ${className}`;
+      document.getElementById('coordSubtitle').textContent = `Academic audit, foundational topic weaknesses, and cluster intervention logs for ${className}`;
+      document.getElementById('adviceClassLabel').textContent = className;
+
+      const students = window.EduTrack.getStudentsByClass(className);
+      let total = 0, helpCount = 0;
+
+      students.forEach(s => {
+        const scores = Object.values(s.subjects).map(sub => sub.marks);
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+        total += avg;
+        if (avg < window.EduTrack.thresholds.average) helpCount++;
+      });
+
+      const classAvg = students.length > 0 ? Math.round(total / students.length) : 68;
+      const perf = window.EduTrack.classifyPerformance(classAvg);
+
+      document.getElementById('statCoordStudents').textContent = `${students.length} Students`;
+      document.getElementById('statCoordClassAvg').textContent = `${classAvg}%`;
+      document.getElementById('statCoordBadge').innerHTML = `<span class="badge ${perf.badgeClass}">${perf.category} Band</span>`;
+      document.getElementById('statCoordHelpCount').textContent = helpCount;
+
+      renderAdviceHistory(className);
+      renderCoordinatorCharts(className);
+    }
+
+    function renderAdviceHistory(className) {
+      const container = document.getElementById('coordinatorAdviceHistoryList');
+      const allAdvice = window.EduTrack.advice;
+      const filtered = allAdvice.filter(a => a.class === className || !a.class);
+
+      document.getElementById('statCoordAdviceCount').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="font-size:0.84rem; color:var(--text-muted);">No directives recorded yet for ${className}.</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(a => `
+        <div class="saved-advice-item">
+          <div class="advice-meta">
+            <span><strong>Target: ${a.class || className}</strong> &bull; ${a.coordinatorName}</span>
+            <span class="badge badge-blue"><i class="fa-solid fa-calendar"></i> ${a.date}</span>
+          </div>
+          <p style="font-size:0.88rem; color:#1e293b; line-height:1.5;">${a.advice}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderCoordinatorCharts(className) {
+      // 1. Subject Bar Chart
+      if (chartCoordSubjects) chartCoordSubjects.destroy();
+      const ctxSubj = document.getElementById('chartCoordSubjects').getContext('2d');
+
+      const subjects = ["Mathematics", "English", "Gujarati", "Hindi", "EVS"];
+      const scores = className === "Class 4" ? [62, 74, 66, 64, 82] : [72, 78, 75, 70, 84];
+
+      chartCoordSubjects = new Chart(ctxSubj, {
+        type: 'bar',
+        data: {
+          labels: subjects,
+          datasets: [{
+            label: `${className} Subject Average %`,
+            data: scores,
+            backgroundColor: scores.map(s => s >= 75 ? '#6AA84F' : (s >= 40 ? '#F6B26B' : '#E06666')),
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { min: 20, max: 100, ticks: { callback: v => v + '%' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // 2. Trend Line Chart
+      if (chartCoordTrend) chartCoordTrend.destroy();
+      const ctxTrend = document.getElementById('chartCoordTrend').getContext('2d');
+
+      chartCoordTrend = new Chart(ctxTrend, {
+        type: 'line',
+        data: {
+          labels: ["Baseline (Jul)", "Unit Test 1 (Aug)", "Unit Test 2 (Sep)", "Midterm (Oct)"],
+          datasets: [{
+            label: `${className} Class Average Progress`,
+            data: [58, 62, 64, 68],
+            borderColor: '#0284c7',
+            backgroundColor: 'rgba(2, 132, 199, 0.1)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: '#0284c7'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 40, max: 100, ticks: { callback: v => v + '%' } }
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

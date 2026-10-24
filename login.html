@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – EduTrack Performance Monitoring</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class='brand-link' href='/'>
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1 data-i18n="appTitle">EduTrack</h1>
+          <span data-i18n="appSubtitle">Smart Performance Monitoring</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <!-- Prominent Language Selector -->
+        <div class="lang-select-wrap" title="Select Website Language / ભાષા પસંદ કરો / भाषा चुनें">
+          <i class="fa-solid fa-language"></i>
+          <select class="site-lang-select" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <a class='btn btn-secondary btn-sm' href='/'>
+          <i class="fa-solid fa-arrow-left"></i>
+          <span data-i18n="backToRoles">Back to Roles</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login Main Content -->
+  <main class="main-content">
+    
+    <div class="login-container">
+      
+      <!-- Role Badge Header -->
+      <div class="login-header">
+        <div id="loginRoleBadge" class="login-role-badge badge-blue">
+          <i id="loginRoleIcon" class="fa-solid fa-chalkboard-user"></i>
+          <span id="loginRoleTitle">Teacher Authentication Portal</span>
+        </div>
+        <h2 style="font-size:1.6rem; font-weight:800; color:var(--primary-navy); margin-top:6px;" data-i18n="loginWelcome">
+          Welcome Back
+        </h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;" data-i18n="loginSub">
+          Sign in to access your authorized student records and analytics
+        </p>
+      </div>
+
+      <!-- Demo Credentials Helper Pill (1-Click Fill) -->
+      <div class="demo-credentials-box">
+        <strong><i class="fa-solid fa-key" style="color:var(--teal-primary);"></i> <span data-i18n="loginDemoHeader">Quick Demo Credentials:</span></strong>
+        <p style="color:var(--text-muted); font-size:0.78rem; margin-bottom:6px;" id="demoBadgeInstructions">
+          Click the badge below to auto-populate credentials for this demo:
+        </p>
+        <div id="autoFillDemoBadge" class="demo-badge-click" title="Click to autofill">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- Authentication Form -->
+      <form id="loginForm" novalidate>
+        
+        <div class="form-group">
+          <label for="usernameInput" data-i18n="loginEmailLabel">Email or Username:</label>
+          <input type="email" id="usernameInput" class="form-control" data-i18n-placeholder="loginEmailPlaceholder" placeholder="e.g. teacher@edutrack.edu" required autocomplete="username">
+          <small id="usernameError" style="color:var(--perf-red); font-size:0.76rem; display:none; margin-top:4px;">
+            Please enter a valid registered email address.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label for="passwordInput" style="margin-bottom:0;" data-i18n="loginPassLabel">Password:</label>
+            <span style="font-size:0.75rem; color:var(--text-light);" id="protoDemoNote">Prototype demo access</span>
+          </div>
+          <div class="password-input-wrapper">
+            <input type="password" id="passwordInput" class="form-control" data-i18n-placeholder="loginPassPlaceholder" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Show or Hide Password">
+              <i class="fa-solid fa-eye" id="passwordEyeIcon"></i>
+            </button>
+          </div>
+          <small id="passwordError" style="color:var(--perf-red); font-size:0.76rem; display:none; margin-top:4px;">
+            Password is required (min 4 characters).
+          </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top:8px;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span data-i18n="secSignIn">Secure Sign In</span>
+        </button>
+
+      </form>
+
+      <!-- Disclaimer Note -->
+      <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-color); font-size:0.76rem; color:var(--text-muted); text-align:center;">
+        <i class="fa-solid fa-shield-halved text-success"></i> 
+        <span data-i18n="loginDisclaimer">Demo environment with role-based session simulation. In production, requests authenticate via secure JWT &amp; server-side RBAC.</span>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1320px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <strong>EduTrack</strong> &mdash; Smart Student Academic Performance Monitoring System
+      </div>
+      <div>
+        <a data-i18n='chooseDiffRole' href='/' style='color:var(--teal-primary); text-decoration:none;'>Choose Different Role</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Determine selected role from URL query params
+      const urlParams = new URLSearchParams(window.location.search);
+      let role = urlParams.get('role') || 'teacher';
+      
+      const roleConfig = {
+        teacher: {
+          titleKey: "teacherAuthPortal",
+          titleDefault: "Teacher Authentication Portal",
+          icon: "fa-chalkboard-user",
+          badgeClass: "badge-blue",
+          email: "teacher@edutrack.edu",
+          pass: "teach123",
+          redirect: "teacher.html"
+        },
+        principal: {
+          titleKey: "principalAuthPortal",
+          titleDefault: "School Principal Authentication Portal",
+          icon: "fa-school",
+          badgeClass: "badge-green",
+          email: "principal@edutrack.edu",
+          pass: "admin123",
+          redirect: "principal.html"
+        },
+        coordinator: {
+          titleKey: "coordAuthPortal",
+          titleDefault: "Block Resource Coordinator Portal",
+          icon: "fa-chart-line",
+          badgeClass: "badge-blue",
+          email: "brc@edutrack.edu",
+          pass: "brc123",
+          redirect: "coordinator.html"
+        },
+        parent: {
+          titleKey: "parentAuthPortal",
+          titleDefault: "Parent & Guardian Authentication Portal",
+          icon: "fa-people-roof",
+          badgeClass: "badge-yellow",
+          email: "parent@edutrack.edu",
+          pass: "parent123",
+          redirect: "parent.html"
+        },
+        admin: {
+          titleKey: "adminAuthPortal",
+          titleDefault: "Central System Administrator Portal",
+          icon: "fa-shield-halved",
+          badgeClass: "badge-red",
+          email: "admin@edutrack.edu",
+          pass: "AdminSecurePass@2026",
+          redirect: "admin.html"
+        }
+      };
+
+      const currentConfig = roleConfig[role] || roleConfig.teacher;
+
+      function updateRoleUI() {
+        const lang = window.i18n ? window.i18n.getLang() : 'en';
+        const titleText = window.i18n ? window.i18n.t(currentConfig.titleKey) : currentConfig.titleDefault;
+        document.getElementById('loginRoleTitle').textContent = titleText;
+        document.getElementById('loginRoleIcon').className = `fa-solid ${currentConfig.icon}`;
+        document.getElementById('loginRoleBadge').className = `login-role-badge ${currentConfig.badgeClass}`;
+
+        const instr = document.getElementById('demoBadgeInstructions');
+        if (instr) {
+          if (lang === 'gu') instr.textContent = "આ ડેમો માટે ઓળખપત્ર આપમેળે ભરવા નીચેના બેજ પર ક્લિક કરો:";
+          else if (lang === 'hi') instr.textContent = "इस डेमो हेतु क्रेडेंशियल्स स्वतः भरने के लिए नीचे दिए गए बैज पर क्लिक करें:";
+          else instr.textContent = "Click the badge below to auto-populate credentials for this demo:";
+        }
+
+        const protoNote = document.getElementById('protoDemoNote');
+        if (protoNote) {
+          if (lang === 'gu') protoNote.textContent = "પ્રોટોટાઇપ ડેમો એક્સેસ";
+          else if (lang === 'hi') protoNote.textContent = "प्रोटोटाइप डेमो पहुंच";
+          else protoNote.textContent = "Prototype demo access";
+        }
+      }
+
+      // Hook language changed event
+      window.onLanguageChanged = function(lang) {
+        updateRoleUI();
+      };
+
+      updateRoleUI();
+
+      // Set autofill demo badge
+      const demoBadge = document.getElementById('autoFillDemoBadge');
+      demoBadge.innerHTML = `<i class="fa-solid fa-copy"></i> ${currentConfig.email} &bull; ${currentConfig.pass}`;
+      
+      demoBadge.addEventListener('click', () => {
+        document.getElementById('usernameInput').value = currentConfig.email;
+        document.getElementById('passwordInput').value = currentConfig.pass;
+        const msg = window.i18n && window.i18n.getLang() === 'gu' ? 'ડેમો ઓળખપત્ર ભરાઈ ગયું!' : 
+                   (window.i18n && window.i18n.getLang() === 'hi' ? 'डेमो क्रेडेंशियल्स भर दिए गए!' : 'Demo credentials populated!');
+        showToast(msg, 'info');
+      });
+
+      // Password toggle
+      const toggleBtn = document.getElementById('togglePasswordBtn');
+      const passInput = document.getElementById('passwordInput');
+      const eyeIcon = document.getElementById('passwordEyeIcon');
+
+      toggleBtn.addEventListener('click', () => {
+        if (passInput.type === 'password') {
+          passInput.type = 'text';
+          eyeIcon.classList.remove('fa-eye');
+          eyeIcon.classList.add('fa-eye-slash');
+        } else {
+          passInput.type = 'password';
+          eyeIcon.classList.remove('fa-eye-slash');
+          eyeIcon.classList.add('fa-eye');
+        }
+      });
+
+      // Form validation & submission
+      const form = document.getElementById('loginForm');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('usernameInput').value.trim();
+        const pass = document.getElementById('passwordInput').value.trim();
+
+        let isValid = true;
+        if (!email || !email.includes('@')) {
+          document.getElementById('usernameError').style.display = 'block';
+          isValid = false;
+        } else {
+          document.getElementById('usernameError').style.display = 'none';
+        }
+
+        if (!pass || pass.length < 4) {
+          document.getElementById('passwordError').style.display = 'block';
+          isValid = false;
+        } else {
+          document.getElementById('passwordError').style.display = 'none';
+        }
+
+        if (!isValid) return;
+
+        // Save session
+        // Connect backend login
+        const apiBase = (window.EduTrack && window.EduTrack.apiBase) ? window.EduTrack.apiBase : 
+          (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 
+          (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000'));
+
+        fetch(`${apiBase}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pass })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.token) {
+            sessionStorage.setItem('edutrack_jwt_token', data.token);
+            localStorage.setItem('edutrack_jwt_token', data.token);
+            const userRole = data.data.role || role;
+            Auth.login(userRole);
+            const redirectUrl = userRole === 'admin' ? 'admin.html' : currentConfig.redirect;
+            showToast(`Authenticated as ${data.data.name || userRole.toUpperCase()}! Redirecting...`, 'success');
+            setTimeout(() => { window.location.href = redirectUrl; }, 600);
+          } else {
+            showToast(data.message || 'Authentication failed. Please check credentials.', 'warning');
+          }
+        })
+        .catch(() => {
+          Auth.login(role);
+          const successMsg = window.i18n && window.i18n.getLang() === 'gu' ? `સફળતાપૂર્વક પ્રમાણિત! આગળ વધી રહ્યા છીએ...` : 
+                            (window.i18n && window.i18n.getLang() === 'hi' ? `सफलतापूर्वक प्रमाणित! पुनः निर्देशित हो रहे हैं...` : `Authenticated as ${role.toUpperCase()}! Redirecting...`);
+          showToast(successMsg, 'success');
+          setTimeout(() => { window.location.href = currentConfig.redirect; }, 600);
+        });
+        return;
+        const successMsg = window.i18n && window.i18n.getLang() === 'gu' ? `સફળતાપૂર્વક પ્રમાણિત! આગળ વધી રહ્યા છીએ...` : 
+                          (window.i18n && window.i18n.getLang() === 'hi' ? `सफलतापूर्वक प्रमाणित! पुनः निर्देशित हो रहे हैं...` : `Authenticated as ${role.toUpperCase()}! Redirecting...`);
+        showToast(successMsg, 'success');
+        
+        setTimeout(() => {
+          window.location.href = currentConfig.redirect;
+        }, 600);
+      });
+    });
+  </script>
+
+</body>
+</html>

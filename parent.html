@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=7b9c6766-8409-49e2-a9c0-bedcb370089a
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Dashboard – EduTrack Child Progress Portal</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class='brand-link' href='/'>
+        <div class="brand-logo-icon" style="background:linear-gradient(135deg, #d97706 0%, #1e3a8a 100%);">
+          <i class="fa-solid fa-people-roof"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1>EduTrack</h1>
+          <span>Parent &amp; Guardian Portal</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <!-- Linked Children Switcher -->
+        <div style="display:flex; align-items:center; gap:8px; background:var(--surface-muted); padding:4px 12px; border-radius:var(--radius-full); border:1px solid var(--border-color);">
+          <i class="fa-solid fa-children" style="color:#d97706;"></i>
+          <label for="childSelector" style="font-size:0.8rem; font-weight:700; margin-bottom:0; color:var(--primary-navy);">Child:</label>
+          <select id="childSelector" class="form-control" style="width:auto; padding:4px 10px; font-size:0.82rem; font-weight:600; border:none; background:transparent;">
+            <option value="ET-2026-401" selected>Aarav Patel (Class 4-A)</option>
+            <option value="ET-2026-501">Pooja Patel (Class 5-A)</option>
+          </select>
+        </div>
+
+        <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Breadcrumb Bar -->
+    <div class="breadcrumb-bar">
+      <a href='/'><i class="fa-solid fa-house"></i> Home</a>
+      <span class="separator">/</span>
+      <span class="current">Parent Portal</span>
+      <span class="separator">/</span>
+      <span class="current" id="parentBreadcrumbChild">Aarav Patel Progress</span>
+    </div>
+
+    <!-- Welcoming Child Banner -->
+    <div class="parent-child-banner">
+      <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+        <img id="childAvatar" src="" alt="Child Avatar" class="child-avatar">
+        <div>
+          <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:#99f6e4; font-weight:700;">Student Academic Summary</span>
+          <h2 id="childName" style="font-size:1.8rem; font-weight:800; margin:2px 0 6px;">Aarav Patel</h2>
+          <div style="display:flex; align-items:center; gap:16px; font-size:0.88rem; color:#e0f2fe; flex-wrap:wrap;">
+            <span><i class="fa-solid fa-graduation-cap"></i> <strong id="childClass">Class 4 - Section A</strong></span>
+            <span><i class="fa-solid fa-id-badge"></i> Roll #<strong id="childRoll">01</strong></span>
+            <span><i class="fa-solid fa-calendar-check"></i> Attendance: <strong id="childAttendance">94%</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.25); border-radius:var(--radius-lg); padding:12px 20px; text-align:center;">
+          <span style="font-size:0.72rem; text-transform:uppercase; color:#d1fae5; display:block;">Overall Performance</span>
+          <h3 id="childOverallScore" style="font-size:2rem; font-weight:800; color:white; line-height:1.1;">68%</h3>
+          <span id="childStatusPill" class="badge badge-yellow" style="margin-top:4px;">Average Mastery</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meaning of Color System Explanation Box for Parents -->
+    <div class="threshold-bar" style="background:#fffbeb; border-color:#fde68a;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fa-solid fa-circle-info" style="color:var(--perf-yellow); font-size:1.15rem;"></i>
+        <div>
+          <strong style="color:#92400e;">Understanding Your Child's Assessment Colors:</strong>
+          <span style="font-size:0.82rem; color:#78350f; display:block;">
+            🟢 <strong>Green (75%–100%)</strong>: Mastered foundational skills &bull; 
+            🟡 <strong>Yellow (40%–74%)</strong>: Steady developing progress &bull; 
+            🔴 <strong>Red (Below 40%)</strong>: Needs gentle extra home practice
+          </span>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-navy" onclick="document.getElementById('floatingAskBtn').click()">
+        <i class="fa-solid fa-comments"></i> Ask Teacher a Question
+      </button>
+    </div>
+
+    <!-- 5 Core Subjects Cards Grid -->
+    <div class="dashboard-header" style="margin-bottom:16px;">
+      <div class="header-title-box">
+        <h3 style="font-size:1.3rem; font-weight:800; color:var(--primary-navy);">
+          <i class="fa-solid fa-book-bookmark" style="color:var(--teal-primary);"></i> Subject-Wise Results &amp; Details
+        </h3>
+        <p>Click "View Topic Details" on any subject card to inspect specific strengths and areas for revision</p>
+      </div>
+    </div>
+
+    <div class="parent-subjects-cards-grid" id="parentSubjectsContainer">
+      <!-- Dynamically generated via JS -->
+    </div>
+
+    <!-- Strongest vs Weakest Subject & Progress Over Time Grid -->
+    <div class="charts-grid-two">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-arrow-trend-up" style="color:var(--teal-primary);"></i> Progress Over Time</h3>
+            <p>Score trajectory across term assessments</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartParentProgress"></canvas>
+        </div>
+      </div>
+
+      <!-- Strengths, Weaknesses & Teacher Remarks -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-brain" style="color:var(--navy-blue);"></i> Core Strengths &amp; Focus Areas</h3>
+            <p>Pedagogical observations compiled by class teachers</p>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <h4 style="font-size:0.9rem; font-weight:700; color:#065f46; margin-bottom:6px;">
+            <i class="fa-solid fa-star text-success"></i> Strongest Academic Domain:
+          </h4>
+          <div id="parentStrongestDomain" style="font-size:0.86rem; color:#047857; background:#f0fdf4; padding:8px 12px; border-radius:var(--radius-sm); border:1px solid #bbf7d0;">
+            Environmental Studies (EVS) &bull; 84% Mastery
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <h4 style="font-size:0.9rem; font-weight:700; color:#991b1b; margin-bottom:6px;">
+            <i class="fa-solid fa-triangle-exclamation text-danger"></i> Domain Requiring Active Practice:
+          </h4>
+          <div id="parentWeakestDomain" style="font-size:0.86rem; color:#b91c1c; background:#fef2f2; padding:8px 12px; border-radius:var(--radius-sm); border:1px solid #fecaca;">
+            Mathematics &bull; 58% (Multiplication Tables needs support)
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border-color); padding-top:14px;">
+          <h4 style="font-size:0.9rem; font-weight:700; color:var(--primary-navy); margin-bottom:6px;">
+            <i class="fa-solid fa-message" style="color:var(--teal-primary);"></i> Teacher Remarks:
+          </h4>
+          <p id="parentTeacherRemarksText" style="font-size:0.85rem; color:#475569; font-style:italic; line-height:1.5;">
+            "Aarav participates actively in science discussions. Daily 10-minute skip counting exercises will strengthen his multiplication tables."
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personalized Home Practice Suggestions (Data-Driven) -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3><i class="fa-solid fa-house-user" style="color:#d97706;"></i> Data-Backed Home Practice Suggestions</h3>
+          <p>Practical 10-minute activities formulated specifically from your child's assessment evidence:</p>
+        </div>
+      </div>
+
+      <div id="parentSuggestionsContainer">
+        <!-- Dynamically rendered based on actual data -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================================
+       MODAL: Subject Topic Level Detailed Breakdown
+       ====================================================================== -->
+  <div class="modal-overlay" id="modalTopicDetails">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalTopicSubjectTitle"><i class="fa-solid fa-book"></i> Mathematics Diagnostic Details</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeTopicModal()" style="padding:2px 8px;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#f8fafc; padding:12px 16px; border-radius:var(--radius-md); margin-bottom:18px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong id="modalChildName" style="color:var(--primary-navy);">Aarav Patel</strong>
+            <div id="modalSubjectMeta" style="font-size:0.8rem; color:var(--text-muted);">Class 4-A &bull; Mathematics</div>
+          </div>
+          <div id="modalSubjectOverallBadge" class="badge badge-yellow">58% (Average)</div>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:700; color:var(--primary-navy); margin-bottom:12px;">
+          Topic Mastery Breakdown:
+        </h4>
+
+        <div id="modalTopicListContainer" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div style="margin-top:20px; padding:12px 14px; background:#eff6ff; border-radius:var(--radius-md); border-left:4px solid var(--navy-light); font-size:0.84rem; color:#1e40af;">
+          <strong><i class="fa-solid fa-lightbulb"></i> How you can help at home:</strong>
+          <p id="modalTopicAdvice" style="margin-top:4px;">
+            Focus on topics marked in yellow or red with relaxed, 10-minute daily practice sessions.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeTopicModal()">Close</button>
+        <button class="btn btn-primary" onclick="closeTopicModal(); document.getElementById('floatingAskBtn').click();">
+          <i class="fa-solid fa-comments"></i> Ask Teacher About This
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1320px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <strong>EduTrack</strong> &mdash; Parent &amp; Guardian Portal
+      </div>
+      <div>
+        Nurturing Primary Learning Outcomes &bull; Gandhinagar District, Gujarat
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let currentStudentId = "ET-2026-401";
+    let chartParentProgress = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const childSelect = document.getElementById('childSelector');
+      childSelect.addEventListener('change', (e) => {
+        currentStudentId = e.target.value;
+        renderParentDashboard();
+      });
+
+      renderParentDashboard();
+    });
+
+    function renderParentDashboard() {
+      const student = window.EduTrack.getStudentById(currentStudentId);
+      if (!student) return;
+
+      document.getElementById('parentBreadcrumbChild').textContent = `${student.name} Progress`;
+      document.getElementById('childName').textContent = student.name;
+      document.getElementById('childAvatar').src = student.avatar;
+      document.getElementById('childClass').textContent = `${student.class} - Section ${student.section}`;
+      document.getElementById('childRoll').textContent = student.rollNo;
+      document.getElementById('childAttendance').textContent = `${student.attendance}%`;
+      document.getElementById('parentTeacherRemarksText').textContent = `"${student.remarks}"`;
+
+      // Calculate overall average
+      const subjects = Object.values(student.subjects);
+      const sum = subjects.reduce((a, b) => a + b.marks, 0);
+      const overallAvg = Math.round(sum / subjects.length);
+      const overallPerf = window.EduTrack.classifyPerformance(overallAvg);
+
+      document.getElementById('childOverallScore').textContent = `${overallAvg}%`;
+      document.getElementById('childStatusPill').className = `badge ${overallPerf.badgeClass}`;
+      document.getElementById('childStatusPill').textContent = `${overallPerf.category}`;
+
+      // Find strongest and weakest subjects
+      let bestSubj = "", worstSubj = "";
+      let bestVal = -1, worstVal = 999;
+      Object.entries(student.subjects).forEach(([subj, data]) => {
+        if (data.marks > bestVal) { bestVal = data.marks; bestSubj = subj; }
+        if (data.marks < worstVal) { worstVal = data.marks; worstSubj = subj; }
+      });
+
+      document.getElementById('parentStrongestDomain').innerHTML = `
+        <i class="fa-solid fa-circle-check text-success"></i> <strong>${bestSubj}</strong> &bull; ${bestVal}% Mastery
+      `;
+      document.getElementById('parentWeakestDomain').innerHTML = `
+        <i class="fa-solid fa-circle-exclamation text-danger"></i> <strong>${worstSubj}</strong> &bull; ${worstVal}% (Practice target)
+      `;
+
+      // Render 5 Subject Cards
+      renderSubjectCards(student);
+
+      // Render Data-Backed Suggestions
+      renderSuggestions(student);
+
+      // Render Chart
+      renderParentChart(student);
+    }
+
+    function renderSubjectCards(student) {
+      const container = document.getElementById('parentSubjectsContainer');
+      const subjectsList = ["Mathematics", "English", "Gujarati", "Hindi", "EVS (Environmental Studies)"];
+
+      container.innerHTML = subjectsList.map(subj => {
+        const data = student.subjects[subj] || { marks: 0, topics: {} };
+        const perf = window.EduTrack.classifyPerformance(data.marks);
+
+        return `
+          <div class="parent-subj-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                <h4 style="font-size:1.1rem; font-weight:700; color:var(--primary-navy);">${subj}</h4>
+                <span class="badge ${perf.badgeClass}">
+                  <i class="fa-solid ${perf.icon}"></i> ${data.marks}%
+                </span>
+              </div>
+
+              <div class="progress-bar-wrap" style="height:10px; margin-bottom:10px;">
+                <div class="progress-bar-fill ${perf.statusKey}" style="width:${data.marks}%;"></div>
+              </div>
+
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
+                Status: <strong style="color:var(--primary-navy);">${perf.category}</strong>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:12px; margin-top:8px;">
+              <span style="font-size:0.75rem; color:var(--text-light);">5 Diagnostic Topics</span>
+              <button class="btn btn-sm btn-secondary" onclick="openTopicModal('${subj}')">
+                <i class="fa-solid fa-list-ul"></i> View Details
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSuggestions(student) {
+      const container = document.getElementById('parentSuggestionsContainer');
+      const allSuggestions = [];
+
+      Object.keys(student.subjects).forEach(subj => {
+        const list = window.EduTrack.generatePersonalizedSuggestions(student, subj);
+        list.forEach(s => allSuggestions.push({ subject: subj, text: s }));
+      });
+
+      container.innerHTML = allSuggestions.slice(0, 4).map(item => `
+        <div class="suggestion-card">
+          <div style="display:flex; align-items:flex-start; gap:10px;">
+            <i class="fa-solid fa-seedling" style="color:var(--perf-yellow); font-size:1.1rem; margin-top:2px;"></i>
+            <div>
+              <strong style="color:#92400e; font-size:0.88rem;">${item.subject}:</strong>
+              <p style="color:#78350f; font-size:0.84rem; margin-top:2px;">${item.text}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderParentChart(student) {
+      if (chartParentProgress) chartParentProgress.destroy();
+      const ctx = document.getElementById('chartParentProgress').getContext('2d');
+
+      const terms = ["Baseline (Jul)", "Unit 1 (Aug)", "Unit 2 (Sep)", "Midterm (Oct)"];
+      const scores = student.id === "ET-2026-401" ? [60, 63, 65, 68] : [72, 75, 78, 80];
+
+      chartParentProgress = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: terms,
+          datasets: [{
+            label: `${student.name} Overall Progress %`,
+            data: scores,
+            borderColor: '#6AA84F',
+            backgroundColor: 'rgba(106, 168, 79, 0.16)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: '#6AA84F'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 40, max: 100, ticks: { callback: v => v + '%' } }
+          }
+        }
+      });
+    }
+
+    function openTopicModal(subjectName) {
+      const student = window.EduTrack.getStudentById(currentStudentId);
+      if (!student) return;
+
+      const data = student.subjects[subjectName] || { marks: 0, topics: {} };
+      const perf = window.EduTrack.classifyPerformance(data.marks);
+
+      document.getElementById('modalTopicSubjectTitle').innerHTML = `<i class="fa-solid fa-book"></i> ${subjectName} Detailed Diagnosis`;
+      document.getElementById('modalChildName').textContent = student.name;
+      document.getElementById('modalSubjectMeta').textContent = `${student.class}-${student.section} &bull; Roll #${student.rollNo}`;
+      document.getElementById('modalSubjectOverallBadge').className = `badge ${perf.badgeClass}`;
+      document.getElementById('modalSubjectOverallBadge').textContent = `${data.marks}% (${perf.category})`;
+
+      const topicContainer = document.getElementById('modalTopicListContainer');
+      topicContainer.innerHTML = Object.entries(data.topics).map(([topic, score]) => {
+        const tPerf = window.EduTrack.classifyPerformance(score);
+        return `
+          <div style="background:white; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px 14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <strong style="font-size:0.86rem; color:var(--primary-navy);">${topic}</strong>
+              <span class="badge ${tPerf.badgeClass}">${score}%</span>
+            </div>
+            <div class="progress-bar-wrap" style="height:6px;">
+              <div class="progress-bar-fill ${tPerf.statusKey}" style="width:${score}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const suggestions = window.EduTrack.generatePersonalizedSuggestions(student, subjectName);
+      document.getElementById('modalTopicAdvice').textContent = suggestions[0];
+
+      document.getElementById('modalTopicDetails').classList.add('active');
+    }
+
+    function closeTopicModal() {
+      document.getElementById('modalTopicDetails').classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="7b9c6766-8409-49e2-a9c0-bedcb370089a" data-app-host="app.netlify.com" data-account-tier="free"></script>

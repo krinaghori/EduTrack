@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel – EduTrack Performance Monitoring</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .admin-tab-btn {
+      background: white;
+      border: 1px solid var(--border-color);
+      padding: 8px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .admin-tab-btn:hover {
+      border-color: var(--teal-primary);
+      color: var(--teal-primary);
+    }
+    .admin-tab-btn.active {
+      background: var(--primary-navy);
+      border-color: var(--primary-navy);
+      color: white;
+    }
+    .admin-pane {
+      display: none;
+    }
+    .admin-pane.active {
+      display: block;
+    }
+    .log-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .log-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand-link" href="/">
+        <div class="brand-logo-icon" style="background:var(--primary-navy);">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1>EduTrack</h1>
+          <span>Central Administration Panel</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <!-- Prominent Language Selector -->
+        <div class="lang-select-wrap" title="Select Website Language">
+          <i class="fa-solid fa-language"></i>
+          <select class="site-lang-select" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <div class="header-user-badge" style="background:#fee2e2; border-color:#fca5a5; color:#991b1b;">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span id="adminUserName">Administrator</span>
+          <span class="role-tag" style="background:#991b1b;">SUPER ADMIN</span>
+        </div>
+
+        <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Breadcrumb Bar -->
+    <div class="breadcrumb-bar">
+      <a href="/"><i class="fa-solid fa-house"></i> Home</a>
+      <span class="separator">/</span>
+      <span class="current">Central Administrator Panel</span>
+    </div>
+
+    <!-- Admin Welcome Header -->
+    <div class="dashboard-header">
+      <div class="header-title-box">
+        <h2>Institutional Database &amp; System Administration</h2>
+        <p>Live server statistics, user role permissions, audit logging, and core Gujarat educational records</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openCreateUserModal()">
+          <i class="fa-solid fa-user-plus"></i> Add New User
+        </button>
+        <button class="btn btn-outline" onclick="triggerDbSeed()" title="Re-seed standard demo data">
+          <i class="fa-solid fa-rotate"></i> Reset / Re-seed Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Metrics Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Total Database Students</span>
+          <h3 id="admStatStudents">...</h3>
+          <div class="stat-sub"><i class="fa-solid fa-graduation-cap text-success"></i> Monitored Cohort</div>
+        </div>
+        <div class="stat-icon-box blue"><i class="fa-solid fa-children"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Registered System Users</span>
+          <h3 id="admStatUsers">...</h3>
+          <div class="stat-sub"><i class="fa-solid fa-users text-success"></i> RBAC Accounts Active</div>
+        </div>
+        <div class="stat-icon-box teal"><i class="fa-solid fa-users-gear"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Pending Parent Doubts</span>
+          <h3 id="admStatDoubts" style="color:var(--perf-yellow);">...</h3>
+          <div class="stat-sub"><i class="fa-solid fa-clock text-warning"></i> Awaiting Resolution</div>
+        </div>
+        <div class="stat-icon-box yellow"><i class="fa-solid fa-comments"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span>Active Directives</span>
+          <h3 id="admStatAdvice" style="color:var(--perf-green);">...</h3>
+          <div class="stat-sub"><i class="fa-solid fa-clipboard-check text-success"></i> Cluster BRC Policies</div>
+        </div>
+        <div class="stat-icon-box green"><i class="fa-solid fa-shield"></i></div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-nav-tabs">
+      <button class="admin-tab-btn active" onclick="switchAdminTab('users', this)">
+        <i class="fa-solid fa-users"></i> User Accounts
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('students', this)">
+        <i class="fa-solid fa-graduation-cap"></i> Students Ledger
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('doubts', this)">
+        <i class="fa-solid fa-comments"></i> Parent Inquiries &amp; Doubts
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('directives', this)">
+        <i class="fa-solid fa-clipboard-list"></i> BRC Directives
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('thresholds', this)">
+        <i class="fa-solid fa-sliders"></i> Mastery Thresholds
+      </button>
+      <button class="admin-tab-btn" onclick="switchAdminTab('audit', this)">
+        <i class="fa-solid fa-list-check"></i> System Audit Logs
+      </button>
+    </div>
+
+    <!-- Tab 1: User Management -->
+    <div id="tabPaneUsers" class="admin-pane active">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-users-gear" style="color:var(--teal-primary);"></i> Registered System Users</h3>
+            <p>Role-Based Access Control: Teachers, Principals, Coordinators, Parents, and Administrators</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <select id="userFilterRole" class="form-control" style="width:auto; padding:6px 12px;" onchange="loadAdminUsers()">
+              <option value="All">All Roles</option>
+              <option value="teacher">Teachers</option>
+              <option value="principal">Principals</option>
+              <option value="coordinator">Coordinators</option>
+              <option value="parent">Parents</option>
+              <option value="admin">Administrators</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User Details</th>
+                <th>Role</th>
+                <th>Assigned Class / Scope</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTableBody">
+              <tr><td colspan="6" style="text-align:center; padding:24px;">Loading users from MongoDB...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Students Management -->
+    <div id="tabPaneStudents" class="admin-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-graduation-cap" style="color:var(--navy-blue);"></i> Core Student Performance Records</h3>
+            <p>Database master record across all primary classes and sections</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="adminStudentSearch" class="form-control" placeholder="Search name or ID..." style="width:220px;" oninput="loadAdminStudents()">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID &amp; Name</th>
+                <th>Class-Sec</th>
+                <th>Parent Email</th>
+                <th>Attendance</th>
+                <th>Overall Avg</th>
+                <th>Mastery Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminStudentsTableBody">
+              <tr><td colspan="7" style="text-align:center; padding:24px;">Loading student records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Parent Inquiries & Doubts -->
+    <div id="tabPaneDoubts" class="admin-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-comments" style="color:var(--teal-primary);"></i> Parent Inquiries &amp; School Doubts</h3>
+            <p>View, reply, and resolve messages submitted through the website drawer</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student &amp; Parent</th>
+                <th>Subject &amp; Category</th>
+                <th>Question</th>
+                <th>Status</th>
+                <th>Reply</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminDoubtsTableBody">
+              <tr><td colspan="6" style="text-align:center; padding:24px;">Loading parent inquiries...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Directives -->
+    <div id="tabPaneDirectives" class="admin-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-clipboard-list" style="color:#0284c7;"></i> BRC Pedagogical Directives Log</h3>
+            <p>Cluster coordinator instructions and intervention statuses</p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Directive ID</th>
+                <th>Class</th>
+                <th>Issued By</th>
+                <th>Directive Details</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminDirectivesTableBody">
+              <tr><td colspan="6" style="text-align:center; padding:24px;">Loading directives...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Thresholds Configuration -->
+    <div id="tabPaneThresholds" class="admin-pane">
+      <div class="card" style="max-width:680px;">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-sliders" style="color:var(--teal-primary);"></i> Academic Performance Mastery Scale</h3>
+            <p>Enforce standardized green, yellow, and red percentage boundaries across all dashboards</p>
+          </div>
+        </div>
+
+        <form id="adminThresholdsForm" style="padding:16px 0;">
+          <div class="form-group">
+            <label for="inputThreshExcellent"><strong>Green • Excellent Standard (Minimum %):</strong></label>
+            <input type="number" id="inputThreshExcellent" class="form-control" value="75" min="50" max="100" required>
+            <small style="color:var(--text-muted);">Scores at or above this percentage qualify students for enrichment.</small>
+          </div>
+
+          <div class="form-group" style="margin-top:16px;">
+            <label for="inputThreshAverage"><strong>Yellow • Average / Developing Standard (Minimum %):</strong></label>
+            <input type="number" id="inputThreshAverage" class="form-control" value="40" min="10" max="80" required>
+            <small style="color:var(--text-muted);">Scores between this percentage and Excellent represent developing competence. Below this is flagged as Critical Learning Gap (Red).</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="margin-top:16px;">
+            <i class="fa-solid fa-floppy-disk"></i> Save Global Thresholds
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tab 6: Audit Logs -->
+    <div id="tabPaneAudit" class="admin-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-shield" style="color:var(--primary-navy);"></i> Immutable Administrative Audit Logs</h3>
+            <p>Full server-side trace of logins, record modifications, and system events</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadAuditLogs()">
+            <i class="fa-solid fa-rotate"></i> Refresh Logs
+          </button>
+        </div>
+        <div id="adminAuditLogsList" style="max-height:500px; overflow-y:auto;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Create User -->
+  <div class="modal-backdrop" id="modalCreateUser">
+    <div class="modal-box" style="max-width:540px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus" style="color:var(--teal-primary);"></i> Provision New User Account</h3>
+        <button class="modal-close-btn" onclick="closeCreateUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="formCreateUser">
+          <div class="form-group">
+            <label for="newUserName">Full Name:</label>
+            <input type="text" id="newUserName" class="form-control" placeholder="e.g. Mrs. Geeta Patel" required>
+          </div>
+
+          <div class="form-group">
+            <label for="newUserEmail">Email Address:</label>
+            <input type="email" id="newUserEmail" class="form-control" placeholder="e.g. gpatel@edutrack.edu" required>
+          </div>
+
+          <div class="form-group">
+            <label for="newUserPassword">Initial Password:</label>
+            <input type="password" id="newUserPassword" class="form-control" placeholder="Minimum 4 characters" minlength="4" required>
+          </div>
+
+          <div class="form-group">
+            <label for="newUserRole">User Portal Role:</label>
+            <select id="newUserRole" class="form-control" required>
+              <option value="teacher">Teacher</option>
+              <option value="principal">School Principal</option>
+              <option value="coordinator">Block Resource Coordinator (BRC)</option>
+              <option value="parent">Parent / Guardian</option>
+              <option value="admin">System Administrator</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="newUserClass">Assigned Class / Scope:</label>
+            <input type="text" id="newUserClass" class="form-control" placeholder="e.g. Class 4 or All" value="Class 4">
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeCreateUserModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Provision Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Reply to Doubt -->
+  <div class="modal-backdrop" id="modalReplyDoubt">
+    <div class="modal-box" style="max-width:540px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-reply" style="color:var(--teal-primary);"></i> Reply to Parent Inquiry</h3>
+        <button class="modal-close-btn" onclick="closeReplyModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="replyDoubtId">
+        <div style="background:#f8fafc; padding:12px 16px; border-radius:var(--radius-md); margin-bottom:14px; font-size:0.86rem;">
+          <strong id="replyStudentInfo">Aarav Patel (Class 4-A)</strong>
+          <p id="replyQuestionText" style="color:#475569; margin-top:6px; font-style:italic;">"Question..."</p>
+        </div>
+
+        <form id="formReplyDoubt">
+          <div class="form-group">
+            <label for="replyMessageInput">Official School Response:</label>
+            <textarea id="replyMessageInput" class="form-control" rows="4" placeholder="Enter teacher/school guidance..." required></textarea>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:16px;">
+            <button type="button" class="btn btn-secondary" onclick="closeReplyModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Send Reply</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    const API_BASE = window.EDUTRACK_API_URL || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:5000');
+
+    function getAuthHeaders() {
+      const token = sessionStorage.getItem('edutrack_jwt_token') || localStorage.getItem('edutrack_jwt_token');
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      };
+    }
+
+    // Role check: redirect if not admin
+    document.addEventListener('DOMContentLoaded', async () => {
+      const role = Auth.getRole();
+      if (role !== 'admin') {
+        // Allow demo login shortcut or redirect
+        const token = sessionStorage.getItem('edutrack_jwt_token') || localStorage.getItem('edutrack_jwt_token');
+        if (!token) {
+          showToast('Admin privilege required. Please sign in as administrator.', 'warning');
+          setTimeout(() => { window.location.href = 'login.html?role=principal'; }, 1200);
+          return;
+        }
+      }
+
+      await loadDashboardCounters();
+      await loadAdminUsers();
+      await loadAdminStudents();
+      await loadAdminDoubts();
+      await loadAdminDirectives();
+      await loadThresholds();
+      await loadAuditLogs();
+    });
+
+    function switchAdminTab(paneId, btn) {
+      document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+
+      const target = {
+        users: 'tabPaneUsers',
+        students: 'tabPaneStudents',
+        doubts: 'tabPaneDoubts',
+        directives: 'tabPaneDirectives',
+        thresholds: 'tabPaneThresholds',
+        audit: 'tabPaneAudit'
+      }[paneId];
+
+      if (target) document.getElementById(target).classList.add('active');
+    }
+
+    async function loadDashboardCounters() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/admin/dashboard`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const { data } = await res.json();
+          document.getElementById('admStatStudents').textContent = data.totalStudents;
+          document.getElementById('admStatUsers').textContent = data.totalUsers;
+          document.getElementById('admStatDoubts').textContent = data.pendingDoubts;
+          document.getElementById('admStatAdvice').textContent = data.totalAdvice;
+        }
+      } catch (e) {
+        console.warn('Admin stats fetch error:', e);
+      }
+    }
+
+    async function loadAdminUsers() {
+      const role = document.getElementById('userFilterRole').value;
+      const url = role && role !== 'All' ? `${API_BASE}/api/v1/admin/users?role=${role}` : `${API_BASE}/api/v1/admin/users`;
+      try {
+        const res = await fetch(url, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const { data } = await res.json();
+          const tbody = document.getElementById('adminUsersTableBody');
+          if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No users found.</td></tr>`;
+            return;
+          }
+          tbody.innerHTML = data.map(u => `
+            <tr>
+              <td><strong>${u.name}</strong><br><small style="color:var(--text-muted);">${u.email}</small></td>
+              <td><span class="badge badge-blue" style="text-transform:uppercase;">${u.role}</span></td>
+              <td>${u.assignedClass || 'General'}</td>
+              <td><span class="badge ${u.isActive ? 'badge-green' : 'badge-red'}">${u.isActive ? 'Active' : 'Deactivated'}</span></td>
+              <td><small>${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never'}</small></td>
+              <td>
+                <button class="btn btn-sm btn-outline" onclick="toggleUserStatus('${u._id}', ${!u.isActive})" title="Toggle Active">
+                  <i class="fa-solid fa-power-off"></i>
+                </button>
+                <button class="btn btn-sm btn-outline" style="color:var(--perf-red); border-color:#fca5a5;" onclick="deleteUser('${u._id}')" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    async function loadAdminStudents() {
+      const search = document.getElementById('adminStudentSearch').value;
+      const url = search ? `${API_BASE}/api/v1/students?search=${encodeURIComponent(search)}` : `${API_BASE}/api/v1/students`;
+      try {
+        const res = await fetch(url, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const { data } = await res.json();
+          const tbody = document.getElementById('adminStudentsTableBody');
+          tbody.innerHTML = data.map(s => {
+            const perf = window.EduTrack ? window.EduTrack.classifyPerformance(s.overallAvg) : { badgeClass: 'badge-yellow', category: 'Developing' };
+            return `
+              <tr>
+                <td><strong>${s.name}</strong><br><small style="color:var(--text-muted);">${s.studentId}</small></td>
+                <td>${s.class}-${s.section} (#${s.rollNo})</td>
+                <td>${s.parentEmail}</td>
+                <td>${s.attendance}%</td>
+                <td><strong>${s.overallAvg}%</strong></td>
+                <td><span class="badge ${perf.badgeClass}">${perf.category}</span></td>
+                <td>
+                  <button class="btn btn-sm btn-outline" style="color:var(--perf-red);" onclick="deleteStudent('${s.studentId}')">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    async function loadAdminDoubts() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/doubts`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const { data } = await res.json();
+          const tbody = document.getElementById('adminDoubtsTableBody');
+          if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No doubts recorded.</td></tr>`;
+            return;
+          }
+          tbody.innerHTML = data.map(d => `
+            <tr>
+              <td><strong>${d.studentName}</strong><br><small style="color:var(--text-muted);">${d.parentName}</small></td>
+              <td><strong>${d.subject}</strong><br><small>${d.category}</small></td>
+              <td style="max-width:280px; font-size:0.82rem;">"${d.question}"</td>
+              <td><span class="badge ${d.status === 'Replied' ? 'badge-green' : (d.status === 'Resolved' ? 'badge-blue' : 'badge-yellow')}">${d.status}</span></td>
+              <td style="max-width:240px; font-size:0.82rem;">${d.reply || '<em>No reply yet</em>'}</td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="openReplyModal('${d.doubtId}', '${d.studentName}', '${d.question.replace(/'/g, "\\'")}')">
+                  <i class="fa-solid fa-reply"></i> Reply
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    async function loadAdminDirectives() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/advice`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const { data } = await res.json();
+          const tbody = document.getElementById('adminDirectivesTableBody');
+          tbody.innerHTML = data.map(a => `
+            <tr>
+              <td><strong>${a.adviceId}</strong><br><small>${a.date}</small></td>
+              <td><span class="badge badge-blue">${a.class}</span></td>
+              <td>${a.coordinatorName}</td>
+              <td style="max-width:320px; font-size:0.82rem;">${a.advice}</td>
+              <td><span class="badge badge-green">${a.status}</span></td>
+              <td>
+                <select class="form-control" style="width:auto; padding:4px 8px; font-size:0.78rem;" onchange="updateDirectiveStatus('${a.adviceId}', this.value)">
+                  <option value="Submitted" ${a.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+                  <option value="In Progress" ${a.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                  <option value="Implemented" ${a.status === 'Implemented' ? 'selected' : ''}>Implemented</option>
+                  <option value="Reviewed" ${a.status === 'Reviewed' ? 'selected' : ''}>Reviewed</option>
+                </select>
+              </td>
+            </tr>
+          `).join('');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    async function loadThresholds() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/settings/thresholds`);
+        if (res.ok) {
+          const { data } = await res.json();
+          document.getElementById('inputThreshExcellent').value = data.excellent;
+          document.getElementById('inputThreshAverage').value = data.average;
+        }
+      } catch (e) {}
+    }
+
+    document.getElementById('adminThresholdsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const excellent = Number(document.getElementById('inputThreshExcellent').value);
+      const average = Number(document.getElementById('inputThreshAverage').value);
+
+      const res = await fetch(`${API_BASE}/api/v1/settings/thresholds`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ excellent, average })
+      });
+      if (res.ok) {
+        showToast('Performance thresholds updated successfully!', 'success');
+      } else {
+        const err = await res.json();
+        showToast(err.message || 'Failed to update thresholds', 'warning');
+      }
+    });
+
+    async function loadAuditLogs() {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/admin/audit-logs`, { headers: getAuthHeaders() });
+        if (res.ok) {
+          const { data } = await res.json();
+          const list = document.getElementById('adminAuditLogsList');
+          if (data.length === 0) {
+            list.innerHTML = `<p style="padding:16px; text-align:center; color:var(--text-muted);">No activity recorded.</p>`;
+            return;
+          }
+          list.innerHTML = data.map(log => `
+            <div class="log-item">
+              <div>
+                <strong style="color:var(--primary-navy);">${log.action}</strong>
+                <span style="color:var(--text-muted); margin-left:8px;">by ${log.userEmail} (${log.role})</span>
+                <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Details: ${JSON.stringify(log.details)}</div>
+              </div>
+              <small style="color:#94a3b8; font-weight:600;">${new Date(log.createdAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}</small>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    // Modal helpers
+    function openCreateUserModal() { document.getElementById('modalCreateUser').classList.add('active'); }
+    function closeCreateUserModal() { document.getElementById('modalCreateUser').classList.remove('active'); }
+
+    document.getElementById('formCreateUser').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('newUserName').value.trim();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const password = document.getElementById('newUserPassword').value.trim();
+      const role = document.getElementById('newUserRole').value;
+      const assignedClass = document.getElementById('newUserClass').value.trim();
+
+      const res = await fetch(`${API_BASE}/api/v1/admin/users`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ name, email, password, role, assignedClass })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(`User ${name} created successfully!`, 'success');
+        closeCreateUserModal();
+        loadAdminUsers();
+        loadDashboardCounters();
+      } else {
+        showToast(data.message || 'Failed to create user', 'warning');
+      }
+    });
+
+    async function toggleUserStatus(userId, isActive) {
+      const res = await fetch(`${API_BASE}/api/v1/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ isActive })
+      });
+      if (res.ok) {
+        showToast('User status updated!', 'info');
+        loadAdminUsers();
+      }
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+      const res = await fetch(`${API_BASE}/api/v1/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        showToast('User deleted.', 'success');
+        loadAdminUsers();
+        loadDashboardCounters();
+      }
+    }
+
+    async function deleteStudent(studentId) {
+      if (!confirm(`Delete student record ${studentId}?`)) return;
+      const res = await fetch(`${API_BASE}/api/v1/students/${studentId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        showToast(`Student ${studentId} deleted.`, 'success');
+        loadAdminStudents();
+        loadDashboardCounters();
+      }
+    }
+
+    function openReplyModal(doubtId, sName, qText) {
+      document.getElementById('replyDoubtId').value = doubtId;
+      document.getElementById('replyStudentInfo').textContent = `Inquiry regarding: ${sName}`;
+      document.getElementById('replyQuestionText').textContent = `"${qText}"`;
+      document.getElementById('modalReplyDoubt').classList.add('active');
+    }
+    function closeReplyModal() { document.getElementById('modalReplyDoubt').classList.remove('active'); }
+
+    document.getElementById('formReplyDoubt').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const doubtId = document.getElementById('replyDoubtId').value;
+      const reply = document.getElementById('replyMessageInput').value.trim();
+
+      const res = await fetch(`${API_BASE}/api/v1/doubts/${doubtId}/reply`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ reply })
+      });
+      if (res.ok) {
+        showToast('Reply dispatched to parent!', 'success');
+        closeReplyModal();
+        loadAdminDoubts();
+        loadDashboardCounters();
+      }
+    });
+
+    async function updateDirectiveStatus(adviceId, status) {
+      const res = await fetch(`${API_BASE}/api/v1/advice/${adviceId}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        showToast('Directive status updated.', 'info');
+      }
+    }
+
+    async function triggerDbSeed() {
+      if (!confirm('Re-seed the database with Gujarat school baseline dataset? Existing records will be refreshed.')) return;
+      const res = await fetch(`${API_BASE}/api/v1/admin/seed`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        showToast('Database seeded with standard records!', 'success');
+        setTimeout(() => location.reload(), 800);
+      }
+    }
+  </script>
+
+</body>
+</html>

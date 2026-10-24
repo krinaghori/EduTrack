@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=7b9c6766-8409-49e2-a9c0-bedcb370089a
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard – EduTrack Performance Monitoring</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- SheetJS (XLSX) CDN for Excel Spreadsheet Imports & Exports -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class='brand-link' href='/'>
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-chalkboard-user"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1 data-i18n="appTitle">EduTrack</h1>
+          <span data-i18n="teacherPortal">Teacher Analytics Portal</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <!-- Prominent Language Selector -->
+        <div class="lang-select-wrap" title="Select Website Language / ભાષા પસંદ કરો / भाषा चुनें">
+          <i class="fa-solid fa-language"></i>
+          <select class="site-lang-select" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <div class="header-user-badge">
+          <i class="fa-solid fa-user-tie"></i>
+          <span>Mrs. Anjali Sharma</span>
+          <span class="role-tag" data-i18n="roleTeacherTitle">Teacher</span>
+        </div>
+        <button class="add-student-nav-btn" id="btnAddStudentNav" onclick="openAddStudentModal()" title="Add Student Data & Marks">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add Student</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span data-i18n="logout">Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Breadcrumb Bar -->
+    <div class="breadcrumb-bar">
+      <a href='/'><i class="fa-solid fa-house"></i> <span data-i18n="homeBreadcrumb">Home</span></a>
+      <span class="separator">/</span>
+      <span class="current" data-i18n="teacherBreadcrumb">Teacher Dashboard</span>
+      <span class="separator">/</span>
+      <span class="current" id="breadcrumbSubject">Mathematics</span>
+    </div>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <div class="header-title-box">
+        <h2 data-i18n="teacherHeaderTitle">Class Academic Performance &amp; Diagnostic Ledger</h2>
+        <p data-i18n="teacherHeaderSub">Continuous classroom evaluation, topic-level gap analysis, and tailored remedial recommendations</p>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-blue">
+          <i class="fa-solid fa-school"></i> <span data-i18n="classSectionPrimary">Class 4 - Section A (Primary)</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Step 1: Subject Selection (5 Subjects) -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header">
+        <div>
+          <h3><i class="fa-solid fa-book-open" style="color:var(--teal-primary);"></i> <span data-i18n="subjectSelectorTitle">Select Subject to Inspect</span></h3>
+          <p data-i18n="subjectSelectorSub">Choose any of the five primary subjects to view topic-wise diagnostic breakdowns:</p>
+        </div>
+      </div>
+
+      <div class="subject-selector-grid" id="subjectSelectorGrid">
+        <button class="subject-btn active" data-subject="Mathematics">
+          <div class="subject-icon"><i class="fa-solid fa-calculator"></i></div>
+          <div>
+            <strong data-i18n="subjMath">Mathematics</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);" data-i18n="fiveDiagnosticTopics">5 Diagnostic Topics</div>
+          </div>
+        </button>
+
+        <button class="subject-btn" data-subject="English">
+          <div class="subject-icon"><i class="fa-solid fa-spell-check"></i></div>
+          <div>
+            <strong data-i18n="subjEng">English</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Language &amp; Grammar</div>
+          </div>
+        </button>
+
+        <button class="subject-btn" data-subject="Gujarati">
+          <div class="subject-icon"><i class="fa-solid fa-pen-nib"></i></div>
+          <div>
+            <strong data-i18n="subjGuj">Gujarati</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">ગુજરાતી સાહિત્ય</div>
+          </div>
+        </button>
+
+        <button class="subject-btn" data-subject="Hindi">
+          <div class="subject-icon"><i class="fa-solid fa-language"></i></div>
+          <div>
+            <strong data-i18n="subjHin">Hindi</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">हिन्दी भाषा एवं व्याकरण</div>
+          </div>
+        </button>
+
+        <button class="subject-btn" data-subject="EVS (Environmental Studies)">
+          <div class="subject-icon"><i class="fa-solid fa-leaf"></i></div>
+          <div>
+            <strong data-i18n="subjEvs">EVS</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Environmental Studies</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Configurable Performance Thresholds Banner -->
+    <div class="threshold-bar">
+      <div class="threshold-legend">
+        <strong style="color:var(--primary-navy);"><i class="fa-solid fa-sliders"></i> <span id="threshBarTitle">Performance Thresholds:</span></strong>
+        <span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> <span id="threshGreenText">Green &bull; Excellent (&ge;<span id="threshExcellentVal">75</span>%)</span></span>
+        <span class="badge badge-yellow"><i class="fa-solid fa-triangle-exclamation"></i> <span id="threshYellowText">Yellow &bull; Average (<span id="threshAvgVal">40</span>% &ndash; 74%)</span></span>
+        <span class="badge badge-red"><i class="fa-solid fa-circle-exclamation"></i> <span id="threshRedText">Red &bull; Needs Improvement (&lt;<span id="threshRedVal">40</span>%)</span></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn btn-sm btn-secondary" id="btnConfigureThresholds">
+          <i class="fa-solid fa-gear"></i> <span data-i18n="btnConfigThresh">Configure Thresholds</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Subject Metrics Summary Cards Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span data-i18n="statStudentsEvaluated">Students Evaluated</span>
+          <h3 id="statTotalStudents">5</h3>
+          <div class="stat-sub"><i class="fa-solid fa-check text-success"></i> <span data-i18n="activeRoster">Class 4-A Active Roster</span></div>
+        </div>
+        <div class="stat-icon-box teal"><i class="fa-solid fa-users"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span data-i18n="statSubjectAvg">Subject Average</span>
+          <h3 id="statSubjectAverage">62%</h3>
+          <div class="stat-sub" id="statSubjectBadge">
+            <span class="badge badge-yellow">Average Mastery</span>
+          </div>
+        </div>
+        <div class="stat-icon-box blue"><i class="fa-solid fa-chart-line"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span data-i18n="statExcPerformers">Excellent Performers</span>
+          <h3 id="statExcellentCount" style="color:var(--perf-green);">1</h3>
+          <div class="stat-sub"><i class="fa-solid fa-circle-check text-success"></i> &ge;75% <span data-i18n="masteryBand">Mastery</span></div>
+        </div>
+        <div class="stat-icon-box green"><i class="fa-solid fa-award"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span data-i18n="statNeedsImprovement">Needs More Improvement</span>
+          <h3 id="statNeedsHelpCount" style="color:var(--perf-red);">1</h3>
+          <div class="stat-sub"><i class="fa-solid fa-triangle-exclamation text-danger"></i> &lt;40% <span data-i18n="statCriticalGap">Critical Gap</span></div>
+        </div>
+        <div class="stat-icon-box red"><i class="fa-solid fa-user-xmark"></i></div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid-two">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-chart-column" style="color:var(--teal-primary);"></i> <span data-i18n="topicMasteryRate">Topic-Wise Class Mastery Rate</span></h3>
+            <p id="chartTopicSubtitle">Breakdown across the 5 primary topics in Mathematics</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartTeacherTopics"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3><i class="fa-solid fa-chart-pie" style="color:var(--navy-blue);"></i> <span data-i18n="perfDistribution">Performance Distribution</span></h3>
+            <p data-i18n="perfDistributionSub">Student breakdown by mastery bands in this subject</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartTeacherDistribution"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Performance Table Card -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3>
+            <i class="fa-solid fa-table-list" style="color:var(--teal-primary);"></i> 
+            <span data-i18n="studentPerfLedger">Student Performance &amp; Diagnostic Ledger:</span> <span id="tableSubjectName" style="color:var(--teal-primary);">Mathematics</span>
+          </h3>
+          <p id="tableSubInfo">Search students, inspect specific topic strengths and gaps, or enter/update marks</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <input type="text" id="studentSearchInput" class="form-control" data-i18n-placeholder="searchPlaceholder" placeholder="Search by student name or roll..." style="width:240px; padding:7px 12px; font-size:0.84rem;">
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th data-i18n="colStudentDetails">Student Details</th>
+              <th data-i18n="colClassRoll">Class &amp; Roll</th>
+              <th data-i18n="colTotalMarks">Total Marks</th>
+              <th data-i18n="colStatus">Performance Status</th>
+              <th data-i18n="colStrengths">Key Strengths</th>
+              <th data-i18n="colWeaknesses">Areas for Improvement</th>
+              <th data-i18n="colActionRec">Recommended Action</th>
+              <th data-i18n="colAction">Action</th>
+            </tr>
+          </thead>
+          <tbody id="teacherStudentTableBody">
+            <!-- Dynamically populated via script -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================================
+       MODAL: Add Student Data (Manual Form & Excel Spreadsheet Import)
+       ====================================================================== -->
+  <div class="modal-overlay" id="modalAddStudent">
+    <div class="modal-dialog-large">
+      <div class="modal-header">
+        <div>
+          <h3 style="margin:0;"><i class="fa-solid fa-user-plus" style="color:var(--teal-primary);"></i> Add Student Records</h3>
+          <p style="font-size:0.84rem; color:var(--text-muted); margin:3px 0 0 0;">
+            Add student details and subject marks manually, or import multiple student records with an Excel spreadsheet.
+          </p>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeAddStudentModal()" style="border:none; font-size:1.4rem; padding:2px 8px; cursor:pointer;" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Mode Switcher: WHICHEVER OPTION IS SELECTED IS DISPLAYED -->
+        <div class="admin-mode-selector">
+          <button type="button" class="admin-mode-btn active" id="btnTabManual" onclick="switchAddStudentMode('manual')">
+            <i class="fa-solid fa-user-pen"></i> Add Manually
+          </button>
+          <button type="button" class="admin-mode-btn" id="btnTabExcel" onclick="switchAddStudentMode('excel')">
+            <i class="fa-solid fa-file-excel"></i> Import with Excel
+          </button>
+        </div>
+
+        <!-- 1. MANUAL ENTRY FORM -->
+        <div class="admin-mode-pane active" id="paneAddManual">
+          <form id="formAddStudentManual" onsubmit="handleManualStudentSubmit(event)">
+            <div style="margin-bottom:12px;">
+              <strong style="color:var(--primary-navy); font-size:0.92rem;"><i class="fa-solid fa-id-card"></i> Student Information</strong>
+            </div>
+
+            <div class="manual-student-form-grid">
+              <div class="form-group">
+                <label for="manualStudentName">Student Full Name *</label>
+                <input type="text" id="manualStudentName" class="form-control" placeholder="e.g. Priya Sharma" required>
+              </div>
+              <div class="form-group">
+                <label for="manualRollNo">Roll Number *</label>
+                <input type="text" id="manualRollNo" class="form-control" placeholder="e.g. 06" required>
+              </div>
+              <div class="form-group">
+                <label for="manualClass">Class *</label>
+                <select id="manualClass" class="form-control" required>
+                  <option value="Class 1">Class 1</option>
+                  <option value="Class 2">Class 2</option>
+                  <option value="Class 3">Class 3</option>
+                  <option value="Class 4" selected>Class 4 (Current Roster)</option>
+                  <option value="Class 5">Class 5</option>
+                  <option value="Class 6">Class 6</option>
+                  <option value="Class 7">Class 7</option>
+                  <option value="Class 8">Class 8</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="manualSection">Section *</label>
+                <select id="manualSection" class="form-control" required>
+                  <option value="A" selected>Section A</option>
+                  <option value="B">Section B</option>
+                  <option value="C">Section C</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="manualParentName">Parent / Guardian Name</label>
+                <input type="text" id="manualParentName" class="form-control" placeholder="e.g. Rameshbhai Sharma">
+              </div>
+              <div class="form-group">
+                <label for="manualParentEmail">Parent Email Address</label>
+                <input type="email" id="manualParentEmail" class="form-control" placeholder="e.g. ramesh.sharma@example.com">
+              </div>
+              <div class="form-group">
+                <label for="manualAttendance">Attendance Percentage (%)</label>
+                <input type="number" id="manualAttendance" class="form-control" min="0" max="100" value="94">
+              </div>
+            </div>
+
+            <div style="margin-bottom:12px; margin-top:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <strong style="color:var(--primary-navy); font-size:0.92rem;"><i class="fa-solid fa-graduation-cap"></i> Subject Marks (Out of 100)</strong>
+                <div id="manualPerformanceBadgeWrap">
+                  <span class="badge badge-green" id="manualCalcBadge"><i class="fa-solid fa-circle-check"></i> Overall Average: 75% (Excellent)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="marks-input-row">
+              <div>
+                <label for="manualMathMarks">Mathematics:</label>
+                <input type="number" id="manualMathMarks" class="form-control" min="0" max="100" value="75" oninput="calculateManualOverallPreview()" required>
+              </div>
+              <div>
+                <label for="manualEnglishMarks">English:</label>
+                <input type="number" id="manualEnglishMarks" class="form-control" min="0" max="100" value="78" oninput="calculateManualOverallPreview()" required>
+              </div>
+              <div>
+                <label for="manualGujaratiMarks">Gujarati:</label>
+                <input type="number" id="manualGujaratiMarks" class="form-control" min="0" max="100" value="74" oninput="calculateManualOverallPreview()" required>
+              </div>
+              <div>
+                <label for="manualHindiMarks">Hindi:</label>
+                <input type="number" id="manualHindiMarks" class="form-control" min="0" max="100" value="72" oninput="calculateManualOverallPreview()" required>
+              </div>
+              <div>
+                <label for="manualEvsMarks">EVS:</label>
+                <input type="number" id="manualEvsMarks" class="form-control" min="0" max="100" value="76" oninput="calculateManualOverallPreview()" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="manualRemarks">Teacher Observations &amp; Remarks</label>
+              <textarea id="manualRemarks" class="form-control" rows="2" placeholder="Enter teacher diagnostic remarks, strengths, or remedial suggestions..."></textarea>
+            </div>
+
+            <div class="modal-footer" style="padding:16px 0 0 0; background:transparent;">
+              <button type="button" class="btn btn-secondary" onclick="closeAddStudentModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="btnSaveManualStudent">
+                <i class="fa-solid fa-check"></i> Save Student Details
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 2. EXCEL SPREADSHEET IMPORT -->
+        <div class="admin-mode-pane" id="paneAddExcel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+            <div>
+              <strong style="color:var(--primary-navy); font-size:0.95rem;"><i class="fa-solid fa-file-excel" style="color:#16a34a;"></i> Bulk Student Import with Excel</strong>
+              <div style="font-size:0.82rem; color:var(--text-muted);">Import student profiles and marks from an Excel (.xlsx, .xls) or CSV spreadsheet.</div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="downloadSampleExcelTemplate()">
+              <i class="fa-solid fa-download" style="color:var(--teal-primary);"></i> Download Sample Template (.xlsx)
+            </button>
+          </div>
+
+          <!-- Drag and drop zone -->
+          <div class="excel-drop-zone" id="excelDropZone" onclick="document.getElementById('excelFileInput').click()">
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleExcelFileUpload(event)">
+            <div class="excel-drop-zone-icon">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <h4 style="font-size:1.05rem; font-weight:700; color:var(--primary-navy); margin-bottom:4px;">
+              Click to Browse or Drag &amp; Drop Excel File Here
+            </h4>
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:6px;">
+              Supports .xlsx, .xls, and .csv files
+            </p>
+            <span class="badge badge-blue">
+              <i class="fa-solid fa-circle-info"></i> Columns: Student Name, Class, Section, Roll No, Mathematics, English, Gujarati, Hindi, EVS, Remarks
+            </span>
+          </div>
+
+          <!-- Live Preview Table -->
+          <div id="excelPreviewContainer" style="display:none;" class="excel-preview-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <strong style="color:var(--primary-navy); font-size:0.92rem;"><i class="fa-solid fa-list-check" style="color:var(--teal-primary);"></i> Parsed Student Rows (<span id="excelParsedCount">0</span> Records Found)</strong>
+                <div style="font-size:0.78rem; color:var(--text-muted);">Review student data before confirming import into dashboard</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="clearExcelPreview()">Clear</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="confirmExcelImport()">
+                  <i class="fa-solid fa-check"></i> Import Students
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive" style="max-height:260px; overflow-y:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Class &amp; Roll</th>
+                    <th>Attendance</th>
+                    <th>Math</th>
+                    <th>English</th>
+                    <th>Gujarati</th>
+                    <th>Hindi</th>
+                    <th>EVS</th>
+                    <th>Overall %</th>
+                    <th>Performance</th>
+                  </tr>
+                </thead>
+                <tbody id="excelPreviewTableRows">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: Update Student Topic Marks & Teacher Remarks
+       ====================================================================== -->
+  <div class="modal-overlay" id="modalEditMarks">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalStudentTitle"><i class="fa-solid fa-pen-to-square"></i> <span data-i18n="updateMarksRemarks">Update Marks & Remarks</span></h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeEditModal()" style="padding:2px 8px;">&times;</button>
+      </div>
+      <form id="editMarksForm">
+        <div class="modal-body">
+          <input type="hidden" id="editStudentId">
+          <input type="hidden" id="editSubjectName">
+
+          <div style="background:#f8fafc; padding:12px 16px; border-radius:var(--radius-md); margin-bottom:18px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong id="editStudentName" style="font-size:1.05rem; color:var(--primary-navy);">Aarav Patel</strong>
+              <div id="editStudentMeta" style="font-size:0.8rem; color:var(--text-muted);">Roll #01 &bull; Class 4-A</div>
+            </div>
+            <div id="editLiveBadge" class="badge badge-yellow">
+              58% (Average)
+            </div>
+          </div>
+
+          <h4 style="font-size:0.92rem; font-weight:700; color:var(--primary-navy); margin-bottom:10px;">
+            <i class="fa-solid fa-list-check"></i> <span data-i18n="topicLevelMarks">Topic-Level Marks (out of 100):</span>
+          </h4>
+
+          <div id="topicInputsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
+            <!-- Dynamically generated topic score fields -->
+          </div>
+
+          <div class="form-group">
+            <label for="editOverallMarks" data-i18n="calculatedOverallMarks">Calculated Overall Subject Marks (%):</label>
+            <input type="number" id="editOverallMarks" class="form-control" min="0" max="100" required readonly style="background:#f1f5f9; font-weight:700;">
+          </div>
+
+          <div class="form-group">
+            <label for="editTeacherRemarks" data-i18n="teacherRemarksLabel">Teacher Remarks & Personalized Observations:</label>
+            <textarea id="editTeacherRemarks" class="form-control" data-i18n-placeholder="teacherRemarksPlaceholder" rows="3" placeholder="Enter teacher feedback..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()" data-i18n="cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="saveRecalculate">Save & Recalculate</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1320px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <strong>EduTrack</strong> &mdash; <span data-i18n="teacherPortal">Teacher Analytics Portal</span>
+      </div>
+      <div id="footerLegendText">
+        Performance Standard: 75%+ (Green) &bull; 40-74% (Yellow) &bull; &lt;40% (Red)
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let currentSubject = "Mathematics";
+    let chartTopics = null;
+    let chartDistribution = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSubjectTabs();
+      initSearch();
+      updateDynamicLanguageTexts();
+      renderTeacherDashboard();
+
+      // Configure Thresholds trigger
+      document.getElementById('btnConfigureThresholds').addEventListener('click', () => {
+        const lang = window.i18n ? window.i18n.getLang() : 'en';
+        const promptExc = lang === 'gu' ? "નવો ઉત્કૃષ્ટ થ્રેશોલ્ડ ટકા દાખલ કરો (દા.ત. ૭૫):" :
+                         (lang === 'hi' ? "नया उत्कृष्ट थ्रेशोल्ड प्रतिशत दर्ज करें (उदा. 75):" : "Enter new Excellent threshold percentage (e.g., 75):");
+        const promptAvg = lang === 'gu' ? "નવો મધ્યમ થ્રેશોલ્ડ ટકા દાખલ કરો (દા.ત. ૪૦):" :
+                         (lang === 'hi' ? "नया औसत थ्रेशोल्ड प्रतिशत दर्ज करें (उदा. 40):" : "Enter new Average threshold percentage (e.g., 40):");
+        const newExc = prompt(promptExc, window.EduTrack.thresholds.excellent);
+        const newAvg = prompt(promptAvg, window.EduTrack.thresholds.average);
+        if (newExc && newAvg && !isNaN(newExc) && !isNaN(newAvg)) {
+          window.EduTrack.thresholds.excellent = Number(newExc);
+          window.EduTrack.thresholds.average = Number(newAvg);
+          window.EduTrack.save(STORAGE_KEYS.THRESHOLDS, window.EduTrack.thresholds);
+          document.getElementById('threshExcellentVal').textContent = newExc;
+          document.getElementById('threshAvgVal').textContent = newAvg;
+          document.getElementById('threshRedVal').textContent = newAvg;
+          renderTeacherDashboard();
+          const successMsg = lang === 'gu' ? 'નવા પ્રદર્શન થ્રેશોલ્ડ સમગ્ર ડેશબોર્ડ પર લાગુ થઈ ગયા છે!' :
+                            (lang === 'hi' ? 'नए प्रदर्शन थ्रेशोल्ड सभी डैशबोर्ड पर लागू कर दिए गए हैं!' : 'Updated performance thresholds applied across all dashboards!');
+          showToast(successMsg, 'success');
+        }
+      });
+
+      // Edit Form Submission
+      document.getElementById('editMarksForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const studentId = document.getElementById('editStudentId').value;
+        const subj = document.getElementById('editSubjectName').value;
+        const remarks = document.getElementById('editTeacherRemarks').value;
+
+        const updatedTopics = {};
+        const inputs = document.querySelectorAll('.topic-input-field');
+        let sum = 0;
+        inputs.forEach(inp => {
+          const tName = inp.getAttribute('data-topic');
+          const val = Number(inp.value) || 0;
+          updatedTopics[tName] = val;
+          sum += val;
+        });
+
+        const overall = Math.round(sum / inputs.length);
+        window.EduTrack.updateStudentMarks(studentId, subj, updatedTopics, overall, remarks);
+        closeEditModal();
+        renderTeacherDashboard();
+        const lang = window.i18n ? window.i18n.getLang() : 'en';
+        const msg = lang === 'gu' ? `${studentId} ના ગુણ અને શિક્ષક નોંધ સફળતાપૂર્વક સાચવવામાં આવી!` :
+                   (lang === 'hi' ? `${studentId} के अंक एवं शिक्षक टिप्पणी सफलतापूर्वक सहेजी गई!` : `Updated marks and remarks for ${studentId} successfully!`);
+        showToast(msg, 'success');
+      });
+    });
+
+    // Hook i18n change listener
+    window.onLanguageChanged = function(lang) {
+      updateDynamicLanguageTexts();
+      renderTeacherDashboard();
+    };
+
+    function updateDynamicLanguageTexts() {
+      const lang = window.i18n ? window.i18n.getLang() : 'en';
+      const exc = window.EduTrack.thresholds.excellent;
+      const avg = window.EduTrack.thresholds.average;
+
+      const titleElem = document.getElementById('threshBarTitle');
+      if (titleElem) {
+        titleElem.textContent = lang === 'gu' ? 'પ્રદર્શન થ્રેશોલ્ડ ધોરણ:' : (lang === 'hi' ? 'प्रदर्शन थ्रेशोल्ड मानक:' : 'Performance Thresholds:');
+      }
+
+      const greenElem = document.getElementById('threshGreenText');
+      if (greenElem) {
+        greenElem.innerHTML = `${lang === 'gu' ? 'લીલો • ઉત્કૃષ્ટ' : (lang === 'hi' ? 'हरा • उत्कृष्ट' : 'Green &bull; Excellent')} (&ge;<span id="threshExcellentVal">${exc}</span>%)`;
+      }
+
+      const yellowElem = document.getElementById('threshYellowText');
+      if (yellowElem) {
+        yellowElem.innerHTML = `${lang === 'gu' ? 'પીળો • મધ્યમ' : (lang === 'hi' ? 'पीला • औसत' : 'Yellow &bull; Average')} (<span id="threshAvgVal">${avg}</span>% &ndash; 74%)`;
+      }
+
+      const redElem = document.getElementById('threshRedText');
+      if (redElem) {
+        redElem.innerHTML = `${lang === 'gu' ? 'લાલ • સુધારણા જરૂરી' : (lang === 'hi' ? 'लाल • सुधार अपेक्षित' : 'Red &bull; Needs Improvement')} (&lt;<span id="threshRedVal">${avg}</span>%)`;
+      }
+
+      const footerText = document.getElementById('footerLegendText');
+      if (footerText) {
+        footerText.textContent = lang === 'gu' ? 'પ્રદર્શન ધોરણ: ૭૫%+ (લીલો) • ૪૦-૭૪% (પીળો) • <૪૦% (લાલ)' :
+                                (lang === 'hi' ? 'प्रदर्शन मानक: 75%+ (हरा) • 40-74% (पीला) • <40% (लाल)' : 'Performance Standard: 75%+ (Green) • 40-74% (Yellow) • <40% (Red)');
+      }
+
+      const subInfo = document.getElementById('tableSubInfo');
+      if (subInfo) {
+        subInfo.textContent = lang === 'gu' ? 'વિદ્યાર્થી શોધો, વિશિષ્ટ મુદ્દાની શક્તિઓ અને ખામીઓ જુઓ અથવા ગુણ અપડેટ કરો' :
+                             (lang === 'hi' ? 'विद्यार्थी खोजें, विशिष्ट बिंदुवार क्षमताएं एवं अंतराल देखें अथवा अंक अपडेट करें' : 'Search students, inspect specific topic strengths and gaps, or enter/update marks');
+      }
+
+      const localizedSubj = window.i18n ? window.i18n.tSubject(currentSubject) : currentSubject;
+      document.getElementById('breadcrumbSubject').textContent = localizedSubj;
+      document.getElementById('tableSubjectName').textContent = localizedSubj;
+      document.getElementById('chartTopicSubtitle').textContent = `${window.i18n.t('topicMasterySub')} ${localizedSubj}`;
+    }
+
+    function initSubjectTabs() {
+      const btns = document.querySelectorAll('.subject-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentSubject = btn.getAttribute('data-subject');
+          updateDynamicLanguageTexts();
+          renderTeacherDashboard();
+        });
+      });
+    }
+
+    function initSearch() {
+      const search = document.getElementById('studentSearchInput');
+      search.addEventListener('input', () => {
+        renderTeacherTable(search.value.toLowerCase().trim());
+      });
+    }
+
+    function renderTeacherDashboard() {
+      renderMetrics();
+      renderTeacherTable();
+      renderCharts();
+    }
+
+    function renderMetrics() {
+      const students = window.EduTrack.getStudentsByClass("Class 4");
+      let totalMarks = 0;
+      let excCount = 0;
+      let helpCount = 0;
+
+      students.forEach(s => {
+        const marks = s.subjects[currentSubject] ? s.subjects[currentSubject].marks : 0;
+        totalMarks += marks;
+        if (marks >= window.EduTrack.thresholds.excellent) excCount++;
+        else if (marks < window.EduTrack.thresholds.average) helpCount++;
+      });
+
+      const avg = students.length > 0 ? Math.round(totalMarks / students.length) : 0;
+      const perf = window.EduTrack.classifyPerformance(avg);
+
+      document.getElementById('statTotalStudents').textContent = students.length;
+      document.getElementById('statSubjectAverage').textContent = `${avg}%`;
+      document.getElementById('statSubjectBadge').innerHTML = `<span class="badge ${perf.badgeClass}">${perf.category} ${window.i18n ? window.i18n.t('masteryBand') : 'Mastery'}</span>`;
+      document.getElementById('statExcellentCount').textContent = excCount;
+      document.getElementById('statNeedsHelpCount').textContent = helpCount;
+    }
+
+    function renderTeacherTable(searchQuery = '') {
+      const tbody = document.getElementById('teacherStudentTableBody');
+      const students = window.EduTrack.getStudentsByClass("Class 4");
+      const lang = window.i18n ? window.i18n.getLang() : 'en';
+
+      const filtered = students.filter(s => 
+        s.name.toLowerCase().includes(searchQuery) || 
+        s.id.toLowerCase().includes(searchQuery) ||
+        s.rollNo.includes(searchQuery)
+      );
+
+      if (filtered.length === 0) {
+        const emptyMsg = lang === 'gu' ? 'ધોરણ ૪ માં કોઈ મેળ ખાતા વિદ્યાર્થી મળ્યા નથી.' :
+                        (lang === 'hi' ? 'कक्षा 4 में कोई मेल खाता विद्यार्थी नहीं मिला।' : 'No matching students found in Class 4.');
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--text-muted);">${emptyMsg}</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(student => {
+        const subjData = student.subjects[currentSubject] || { marks: 0, topics: {} };
+        const perf = window.EduTrack.classifyPerformance(subjData.marks);
+
+        // Identify Strengths and Weaknesses
+        const strongTopics = [];
+        const weakTopics = [];
+
+        Object.entries(subjData.topics).forEach(([topic, score]) => {
+          if (score >= window.EduTrack.thresholds.excellent) strongTopics.push(topic);
+          else if (score < window.EduTrack.thresholds.average) weakTopics.push(`${topic} (${score}%)`);
+        });
+
+        // Recommended Activity
+        const suggestions = window.EduTrack.generatePersonalizedSuggestions(student, currentSubject);
+
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${student.avatar}" alt="" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
+                <div>
+                  <strong style="color:var(--primary-navy);">${student.name}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-light);">${student.id}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <strong>${student.class}-${student.section}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Roll #${student.rollNo}</div>
+            </td>
+            <td>
+              <div class="progress-bar-wrap" style="width:90px; margin-bottom:4px;">
+                <div class="progress-bar-fill ${perf.statusKey}" style="width:${subjData.marks}%;"></div>
+              </div>
+              <strong>${subjData.marks} / 100 (${subjData.marks}%)</strong>
+            </td>
+            <td>
+              <span class="badge ${perf.badgeClass}">
+                <i class="fa-solid ${perf.icon}"></i> ${perf.category}
+              </span>
+            </td>
+            <td>
+              ${strongTopics.length > 0 
+                ? strongTopics.slice(0, 2).map(t => `<div style="font-size:0.78rem; color:#065f46;"><i class="fa-solid fa-check text-success"></i> ${t}</div>`).join('')
+                : `<span style="font-size:0.78rem; color:var(--text-muted);">${window.i18n ? window.i18n.t('developing') : 'Developing'}</span>`}
+            </td>
+            <td>
+              ${weakTopics.length > 0 
+                ? weakTopics.slice(0, 2).map(w => `<div style="font-size:0.78rem; color:#991b1b;"><i class="fa-solid fa-triangle-exclamation text-danger"></i> ${w}</div>`).join('')
+                : `<span style="font-size:0.78rem; color:#065f46;">${window.i18n ? window.i18n.t('noCriticalGaps') : 'No critical gaps'}</span>`}
+            </td>
+            <td>
+              <div style="font-size:0.8rem; color:#334155; max-width:260px;">
+                ${suggestions[0]}
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-secondary btn-sm" onclick="openEditModal('${student.id}')">
+                <i class="fa-solid fa-pen-to-square"></i> ${window.i18n ? window.i18n.t('edit') : 'Edit'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderCharts() {
+      const students = window.EduTrack.getStudentsByClass("Class 4");
+      const topicsList = SUBJECT_TOPICS[currentSubject] || [];
+      const lang = window.i18n ? window.i18n.getLang() : 'en';
+
+      // 1. Topic Average Chart
+      const topicAverages = topicsList.map(t => {
+        let sum = 0, count = 0;
+        students.forEach(s => {
+          if (s.subjects[currentSubject] && s.subjects[currentSubject].topics[t] !== undefined) {
+            sum += s.subjects[currentSubject].topics[t];
+            count++;
+          }
+        });
+        return count > 0 ? Math.round(sum / count) : 60;
+      });
+
+      if (chartTopics) chartTopics.destroy();
+      const ctxTopics = document.getElementById('chartTeacherTopics').getContext('2d');
+      const topicDatasetLabel = lang === 'gu' ? 'વર્ગ મુદ્દા પ્રાવીણ્ય %' : (lang === 'hi' ? 'कक्षा बिंदुवार दक्षता %' : 'Class Topic Mastery %');
+      chartTopics = new Chart(ctxTopics, {
+        type: 'bar',
+        data: {
+          labels: topicsList.map(t => t.length > 18 ? t.substring(0, 16) + '...' : t),
+          datasets: [{
+            label: topicDatasetLabel,
+            data: topicAverages,
+            backgroundColor: topicAverages.map(a => 
+              a >= window.EduTrack.thresholds.excellent ? '#6AA84F' : (a >= window.EduTrack.thresholds.average ? '#F6B26B' : '#E06666')
+            ),
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { min: 0, max: 100, ticks: { callback: v => v + '%' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // 2. Distribution Doughnut Chart
+      let green = 0, yellow = 0, red = 0;
+      students.forEach(s => {
+        const m = s.subjects[currentSubject] ? s.subjects[currentSubject].marks : 0;
+        if (m >= window.EduTrack.thresholds.excellent) green++;
+        else if (m >= window.EduTrack.thresholds.average) yellow++;
+        else red++;
+      });
+
+      if (chartDistribution) chartDistribution.destroy();
+      const ctxDist = document.getElementById('chartTeacherDistribution').getContext('2d');
+      const lblExc = `${window.i18n ? window.i18n.t('statusExcellent') : 'Excellent'} (≥${window.EduTrack.thresholds.excellent}%)`;
+      const lblAvg = `${window.i18n ? window.i18n.t('statusAverage') : 'Average'} (${window.EduTrack.thresholds.average}-74%)`;
+      const lblHelp = `${window.i18n ? window.i18n.t('statusNeedsHelp') : 'Needs Help'} (<${window.EduTrack.thresholds.average}%)`;
+      chartDistribution = new Chart(ctxDist, {
+        type: 'doughnut',
+        data: {
+          labels: [lblExc, lblAvg, lblHelp],
+          datasets: [{
+            data: [green, yellow, red],
+            backgroundColor: ['#6AA84F', '#F6B26B', '#E06666'],
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } },
+          cutout: '65%'
+        }
+      });
+    }
+
+    // ======================================================================
+    // ADD STUDENT MODAL & DATA MANAGEMENT
+    // ======================================================================
+    let parsedExcelStudentsList = [];
+
+    function openAddStudentModal() {
+      document.getElementById('modalAddStudent').classList.add('active');
+      calculateManualOverallPreview();
+    }
+
+    function closeAddStudentModal() {
+      document.getElementById('modalAddStudent').classList.remove('active');
+    }
+
+    function switchAddStudentMode(mode) {
+      const btnManual = document.getElementById('btnTabManual');
+      const btnExcel = document.getElementById('btnTabExcel');
+      const paneManual = document.getElementById('paneAddManual');
+      const paneExcel = document.getElementById('paneAddExcel');
+
+      if (mode === 'manual') {
+        btnManual.classList.add('active');
+        btnExcel.classList.remove('active');
+        paneManual.classList.add('active');
+        paneExcel.classList.remove('active');
+      } else {
+        btnExcel.classList.add('active');
+        btnManual.classList.remove('active');
+        paneExcel.classList.add('active');
+        paneManual.classList.remove('active');
+      }
+    }
+
+    function calculateManualOverallPreview() {
+      const math = Number(document.getElementById('manualMathMarks').value) || 0;
+      const eng = Number(document.getElementById('manualEnglishMarks').value) || 0;
+      const guj = Number(document.getElementById('manualGujaratiMarks').value) || 0;
+      const hin = Number(document.getElementById('manualHindiMarks').value) || 0;
+      const evs = Number(document.getElementById('manualEvsMarks').value) || 0;
+
+      const avg = Math.round((math + eng + guj + hin + evs) / 5);
+      const perf = window.EduTrack.classifyPerformance(avg);
+
+      const badge = document.getElementById('manualCalcBadge');
+      if (badge) {
+        badge.className = `badge ${perf.badgeClass}`;
+        badge.innerHTML = `<i class="fa-solid ${perf.icon}"></i> Overall Average: ${avg}% (${perf.category})`;
+      }
+    }
+
+    async function handleManualStudentSubmit(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('manualStudentName').value.trim();
+      const rollNo = document.getElementById('manualRollNo').value.trim();
+      const sClass = document.getElementById('manualClass').value;
+      const section = document.getElementById('manualSection').value;
+      const parentName = document.getElementById('manualParentName').value.trim() || 'Parent/Guardian';
+      const parentEmail = document.getElementById('manualParentEmail').value.trim() || 'parent@edutrack.edu';
+      const attendance = Number(document.getElementById('manualAttendance').value) || 90;
+      const remarks = document.getElementById('manualRemarks').value.trim() || 'Active classroom participation and steady progress.';
+
+      const math = Math.min(100, Math.max(0, Number(document.getElementById('manualMathMarks').value) || 0));
+      const eng = Math.min(100, Math.max(0, Number(document.getElementById('manualEnglishMarks').value) || 0));
+      const guj = Math.min(100, Math.max(0, Number(document.getElementById('manualGujaratiMarks').value) || 0));
+      const hin = Math.min(100, Math.max(0, Number(document.getElementById('manualHindiMarks').value) || 0));
+      const evs = Math.min(100, Math.max(0, Number(document.getElementById('manualEvsMarks').value) || 0));
+
+      // Build realistic topic scores around each subject mark
+      const makeTopics = (subjName, mark) => {
+        const topics = SUBJECT_TOPICS[subjName] || [];
+        const res = {};
+        topics.forEach(t => {
+          const varScore = mark + (Math.floor(Math.random() * 11) - 5);
+          res[t] = Math.min(100, Math.max(0, varScore));
+        });
+        return res;
+      };
+
+      const newStudent = {
+        name: name,
+        rollNo: rollNo,
+        class: sClass,
+        section: section,
+        parentName: parentName,
+        parentEmail: parentEmail,
+        attendance: attendance,
+        remarks: remarks,
+        avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80",
+        subjects: {
+          "Mathematics": { total: 100, marks: math, topics: makeTopics("Mathematics", math) },
+          "English": { total: 100, marks: eng, topics: makeTopics("English", eng) },
+          "Gujarati": { total: 100, marks: guj, topics: makeTopics("Gujarati", guj) },
+          "Hindi": { total: 100, marks: hin, topics: makeTopics("Hindi", hin) },
+          "EVS (Environmental Studies)": { total: 100, marks: evs, topics: makeTopics("EVS (Environmental Studies)", evs) }
+        }
+      };
+
+      // Add to data store and backend
+      await window.EduTrack.addStudent(newStudent);
+
+      // Reset form & close modal
+      document.getElementById('formAddStudentManual').reset();
+      closeAddStudentModal();
+
+      // Show toast
+      showToast(`Student ${name} added successfully!`, 'success');
+
+      // Immediately display in teacher's dashboard
+      renderTeacherDashboard();
+    }
+
+    function downloadSampleExcelTemplate() {
+      if (typeof XLSX === 'undefined') {
+        showToast('Spreadsheet engine loading, please try again in a moment.', 'warning');
+        return;
+      }
+
+      const sampleData = [
+        {
+          "Student Name": "Sneha Trivedi",
+          "Class": "Class 4",
+          "Section": "A",
+          "Roll No": "06",
+          "Parent Name": "Rajesh Trivedi",
+          "Parent Email": "rajesh.trivedi@example.com",
+          "Attendance": 94,
+          "Mathematics": 82,
+          "English": 88,
+          "Gujarati": 80,
+          "Hindi": 78,
+          "EVS": 90,
+          "Remarks": "Very attentive in science discussions. Good communication skills."
+        },
+        {
+          "Student Name": "Manish Varma",
+          "Class": "Class 4",
+          "Section": "A",
+          "Roll No": "07",
+          "Parent Name": "Girish Varma",
+          "Parent Email": "girish.varma@example.com",
+          "Attendance": 88,
+          "Mathematics": 45,
+          "English": 62,
+          "Gujarati": 55,
+          "Hindi": 58,
+          "EVS": 72,
+          "Remarks": "Needs support in math word problems. Regular remedial session advised."
+        },
+        {
+          "Student Name": "Khushi Shah",
+          "Class": "Class 4",
+          "Section": "A",
+          "Roll No": "08",
+          "Parent Name": "Nilesh Shah",
+          "Parent Email": "nilesh.shah@example.com",
+          "Attendance": 96,
+          "Mathematics": 92,
+          "English": 85,
+          "Gujarati": 88,
+          "Hindi": 84,
+          "EVS": 94,
+          "Remarks": "High achievement across all areas. Demonstrates leadership qualities."
+        }
+      ];
+
+      const ws = XLSX.utils.json_to_sheet(sampleData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Students");
+      XLSX.writeFile(wb, "EduTrack_Students_Template.xlsx");
+      showToast("Sample Excel template downloaded!", "info");
+    }
+
+    function handleExcelFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+          if (!rawRows || rawRows.length === 0) {
+            showToast("The spreadsheet appears to be empty.", "warning");
+            return;
+          }
+
+          // Parse and normalize rows
+          parsedExcelStudentsList = rawRows.map((row, idx) => {
+            const findKey = (candidates) => {
+              for (const c of candidates) {
+                const k = Object.keys(row).find(k => k.trim().toLowerCase() === c.toLowerCase());
+                if (k && row[k] !== undefined && row[k] !== "") return row[k];
+              }
+              return "";
+            };
+
+            const name = findKey(["Student Name", "Name", "StudentName", "Full Name"]) || `Student ${idx + 1}`;
+            const rollNo = String(findKey(["Roll No", "Roll", "RollNo", "RollNumber"]) || String(idx + 1).padStart(2, '0'));
+            const sClass = findKey(["Class", "Grade"]) || "Class 4";
+            const section = findKey(["Section", "Sec"]) || "A";
+            const parentName = findKey(["Parent Name", "Parent", "Guardian"]) || "Parent/Guardian";
+            const parentEmail = findKey(["Parent Email", "Email"]) || "parent@edutrack.edu";
+            const attendance = Number(findKey(["Attendance", "Attendance %"])) || 90;
+            const remarks = findKey(["Remarks", "Feedback", "Notes"]) || "Regular classroom participation.";
+
+            const math = Math.min(100, Math.max(0, Number(findKey(["Mathematics", "Math", "Maths"])) || 70));
+            const eng = Math.min(100, Math.max(0, Number(findKey(["English", "Eng"])) || 70));
+            const guj = Math.min(100, Math.max(0, Number(findKey(["Gujarati", "Guj"])) || 70));
+            const hin = Math.min(100, Math.max(0, Number(findKey(["Hindi", "Hin"])) || 70));
+            const evs = Math.min(100, Math.max(0, Number(findKey(["EVS", "Environmental Studies", "Science"])) || 75));
+
+            const avg = Math.round((math + eng + guj + hin + evs) / 5);
+
+            const makeTopics = (subjName, mark) => {
+              const topics = SUBJECT_TOPICS[subjName] || [];
+              const res = {};
+              topics.forEach(t => {
+                const varScore = mark + (Math.floor(Math.random() * 11) - 5);
+                res[t] = Math.min(100, Math.max(0, varScore));
+              });
+              return res;
+            };
+
+            return {
+              name,
+              rollNo,
+              class: sClass,
+              section,
+              parentName,
+              parentEmail,
+              attendance,
+              remarks,
+              avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80",
+              overallAvg: avg,
+              subjects: {
+                "Mathematics": { total: 100, marks: math, topics: makeTopics("Mathematics", math) },
+                "English": { total: 100, marks: eng, topics: makeTopics("English", eng) },
+                "Gujarati": { total: 100, marks: guj, topics: makeTopics("Gujarati", guj) },
+                "Hindi": { total: 100, marks: hin, topics: makeTopics("Hindi", hin) },
+                "EVS (Environmental Studies)": { total: 100, marks: evs, topics: makeTopics("EVS (Environmental Studies)", evs) }
+              }
+            };
+          });
+
+          renderExcelPreviewTable(parsedExcelStudentsList);
+          document.getElementById('excelPreviewContainer').style.display = 'block';
+          showToast(`Parsed ${parsedExcelStudentsList.length} students from spreadsheet!`, 'info');
+
+        } catch (err) {
+          console.error("Excel parse error:", err);
+          showToast("Failed to parse Excel file. Please check format.", "warning");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function renderExcelPreviewTable(list) {
+      document.getElementById('excelParsedCount').textContent = list.length;
+      const tbody = document.getElementById('excelPreviewTableRows');
+
+      tbody.innerHTML = list.map((item, i) => {
+        const perf = window.EduTrack.classifyPerformance(item.overallAvg);
+        return `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong>${item.name}</strong></td>
+            <td>${item.class}-${item.section} (#${item.rollNo})</td>
+            <td>${item.attendance}%</td>
+            <td>${item.subjects.Mathematics.marks}</td>
+            <td>${item.subjects.English.marks}</td>
+            <td>${item.subjects.Gujarati.marks}</td>
+            <td>${item.subjects.Hindi.marks}</td>
+            <td>${item.subjects["EVS (Environmental Studies)"].marks}</td>
+            <td><strong>${item.overallAvg}%</strong></td>
+            <td><span class="badge ${perf.badgeClass}"><i class="fa-solid ${perf.icon}"></i> ${perf.category}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearExcelPreview() {
+      parsedExcelStudentsList = [];
+      document.getElementById('excelFileInput').value = '';
+      document.getElementById('excelPreviewContainer').style.display = 'none';
+      document.getElementById('excelPreviewTableRows').innerHTML = '';
+    }
+
+    async function confirmExcelImport() {
+      if (!parsedExcelStudentsList || parsedExcelStudentsList.length === 0) {
+        showToast("No student records to import.", "warning");
+        return;
+      }
+
+      await window.EduTrack.importBulkStudents(parsedExcelStudentsList);
+      const count = parsedExcelStudentsList.length;
+
+      clearExcelPreview();
+      closeAddStudentModal();
+
+      showToast(`Successfully imported ${count} students!`, 'success');
+
+      // Immediately display in teacher's dashboard
+      renderTeacherDashboard();
+    }
+
+    // Backend sync hook
+    window.onDataLoaded = function() {
+      renderTeacherDashboard();
+    };
+
+    function openEditModal(studentId) {
+      const student = window.EduTrack.getStudentById(studentId);
+      if (!student) return;
+
+      document.getElementById('editStudentId').value = student.id;
+      document.getElementById('editSubjectName').value = currentSubject;
+      document.getElementById('editStudentName').textContent = student.name;
+      document.getElementById('editStudentMeta').textContent = `ID: ${student.id} &bull; ${student.class}-${student.section} &bull; Roll #${student.rollNo}`;
+      document.getElementById('editTeacherRemarks').value = student.remarks || '';
+
+      const subjData = student.subjects[currentSubject] || { marks: 0, topics: {} };
+      document.getElementById('editOverallMarks').value = subjData.marks;
+
+      const topicsContainer = document.getElementById('topicInputsContainer');
+      const topics = SUBJECT_TOPICS[currentSubject] || [];
+
+      topicsContainer.innerHTML = topics.map(topic => {
+        const score = subjData.topics[topic] !== undefined ? subjData.topics[topic] : 60;
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="font-size:0.84rem; color:#334155; margin-bottom:0; flex:1;">${topic}:</label>
+            <input type="number" 
+                   class="form-control topic-input-field" 
+                   data-topic="${topic}" 
+                   value="${score}" 
+                   min="0" 
+                   max="100" 
+                   style="width:90px; text-align:center;" 
+                   oninput="recalculateEditAverage()">
+          </div>
+        `;
+      }).join('');
+
+      recalculateEditAverage();
+      document.getElementById('modalEditMarks').classList.add('active');
+    }
+
+    function recalculateEditAverage() {
+      const inputs = document.querySelectorAll('.topic-input-field');
+      let sum = 0;
+      inputs.forEach(inp => sum += (Number(inp.value) || 0));
+      const avg = inputs.length > 0 ? Math.round(sum / inputs.length) : 0;
+      document.getElementById('editOverallMarks').value = avg;
+
+      const perf = window.EduTrack.classifyPerformance(avg);
+      const liveBadge = document.getElementById('editLiveBadge');
+      liveBadge.className = `badge ${perf.badgeClass}`;
+      liveBadge.innerHTML = `${avg}% (${perf.category})`;
+    }
+
+    function closeEditModal() {
+      document.getElementById('modalEditMarks').classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="7b9c6766-8409-49e2-a9c0-bedcb370089a" data-app-host="app.netlify.com" data-account-tier="free"></script>

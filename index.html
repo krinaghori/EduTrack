@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=7b9c6766-8409-49e2-a9c0-bedcb370089a
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTrack – Smart Student Performance Monitoring System</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class='brand-link' href='/'>
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1 data-i18n="appTitle">EduTrack</h1>
+          <span data-i18n="appSubtitle">Smart Performance Monitoring</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <!-- Prominent Language Selector -->
+        <div class="lang-select-wrap" title="Select Website Language / ભાષા પસંદ કરો / भाषा चुनें">
+          <i class="fa-solid fa-language"></i>
+          <select class="site-lang-select" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <div class="header-user-badge">
+          <i class="fa-solid fa-school"></i>
+          <span data-i18n="portalTag">Primary &amp; Middle Academic Portal</span>
+        </div>
+        <a href="admin.html" class="btn btn-secondary btn-sm" title="Central Administration Portal">
+          <i class="fa-solid fa-screwdriver-wrench"></i> <span>Admin</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Landing Content -->
+  <main class="main-content">
+    
+    <!-- Hero Banner -->
+    <section class="landing-hero">
+      <div class="landing-badge">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span data-i18n="landingBadge">Multi-Stakeholder Educational Intelligence Platform</span>
+      </div>
+      <h2 data-i18n="landingHeading">EduTrack</h2>
+      <p data-i18n="landingSubtitle">
+        Identify student learning gaps, monitor classroom outcomes, evaluate assigned school blocks, 
+        and foster transparent, joyful communication between teachers and parents.
+      </p>
+    </section>
+
+    <!-- Role Selection Section -->
+    <section>
+      <div style="text-align:center; margin-bottom:24px;">
+        <h3 style="font-size:1.35rem; font-weight:700; color:var(--primary-navy);" data-i18n="selectPortalHeading">
+          Select Your Portal to Continue
+        </h3>
+        <p style="font-size:0.88rem; color:var(--text-muted);" data-i18n="selectPortalSubtitle">
+          Choose your role below to access customized dashboards, student analytics, and reporting tools.
+        </p>
+      </div>
+
+      <!-- 4 Role Cards Grid -->
+      <div class="role-cards-grid" id="roleCardsGrid">
+        
+        <!-- Role 1: Teachers -->
+        <div class="role-card selected" data-role="teacher">
+          <div>
+            <div class="role-card-top">
+              <div class="role-icon-circle">
+                <i class="fa-solid fa-chalkboard-user"></i>
+              </div>
+              <div class="role-radio-check">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <h3 data-i18n="roleTeacherTitle">Teachers</h3>
+            <p data-i18n="roleTeacherDesc">Subject-specific mastery evaluation, granular topic strength and weakness diagnosis, and live mark entry.</p>
+          </div>
+          <ul class="role-card-features">
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleTeacherFeat1">5 Subjects &amp; Topic breakdown</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleTeacherFeat2">Mark entry &amp; diagnostic remarks</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleTeacherFeat3">Configurable performance alerts</span></li>
+          </ul>
+        </div>
+
+        <!-- Role 2: Principals -->
+        <div class="role-card" data-role="principal">
+          <div>
+            <div class="role-card-top">
+              <div class="role-icon-circle">
+                <i class="fa-solid fa-school"></i>
+              </div>
+              <div class="role-radio-check">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <h3 data-i18n="rolePrincipalTitle">School Principals</h3>
+            <p data-i18n="rolePrincipalDesc">Macro school health, classroom-wise comparisons, longitudinal academic trends, and policy suggestions.</p>
+          </div>
+          <ul class="role-card-features">
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="rolePrincipalFeat1">School-wide performance ledger</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="rolePrincipalFeat2">Drill-down by Class 1 to 8</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="rolePrincipalFeat3">FLN &amp; Excellence distributions</span></li>
+          </ul>
+        </div>
+
+        <!-- Role 3: Block Resource Coordinators -->
+        <div class="role-card" data-role="coordinator">
+          <div>
+            <div class="role-card-top">
+              <div class="role-icon-circle">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+              <div class="role-radio-check">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <h3 data-i18n="roleCoordTitle">Block Coordinators</h3>
+            <p data-i18n="roleCoordDesc">Cluster review for assigned classrooms, identifying recurring learning gaps, and issuing saved pedagogical advice.</p>
+          </div>
+          <ul class="role-card-features">
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleCoordFeat1">Secure access to assigned classes only</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleCoordFeat2">Learning gap clustering analysis</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleCoordFeat3">Editable advice &amp; intervention log</span></li>
+          </ul>
+        </div>
+
+        <!-- Role 4: Parents -->
+        <div class="role-card" data-role="parent">
+          <div>
+            <div class="role-card-top">
+              <div class="role-icon-circle">
+                <i class="fa-solid fa-people-roof"></i>
+              </div>
+              <div class="role-radio-check">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <h3 data-i18n="roleParentTitle">Parents</h3>
+            <p data-i18n="roleParentDesc">Welcoming progress cards for your child, data-backed home practice recommendations, and direct teacher queries.</p>
+          </div>
+          <ul class="role-card-features">
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleParentFeat1">Authorized linked child access</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleParentFeat2">Plain-language progress cards</span></li>
+            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="roleParentFeat3">10-minute home practice games</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Continue Action Bar -->
+      <div class="continue-action-bar">
+        <div>
+          <span style="font-size:0.78rem; text-transform:uppercase; font-weight:700; color:var(--text-muted);" data-i18n="currentSelection">Current Selection:</span>
+          <h4 id="selectedRoleLabel" style="font-size:1.15rem; color:var(--primary-navy); margin-top:2px;">
+            <i class="fa-solid fa-chalkboard-user" style="color:var(--teal-primary);"></i> Teachers Portal
+          </h4>
+        </div>
+        <button id="btnContinueLogin" class="btn btn-primary btn-lg">
+          <span data-i18n="continueToLogin">Continue to Login</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Platform Highlights Section -->
+    <section style="margin-top:48px;">
+      <div class="card" style="background:linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-chart-pie" style="color:var(--teal-primary);"></i> <span id="colorStandardTitle">Standardized Academic Performance Color System</span></h3>
+        </div>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;" id="colorStandardSub">
+          EduTrack enforces a uniform, transparent three-tier mastery standard across all subjects and user dashboards:
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px;">
+          <div style="background:var(--perf-green-light); border:1px solid var(--perf-green-border); padding:16px; border-radius:var(--radius-md);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span class="badge badge-green" data-i18n="legendGreen">Green • Excellent (75% – 100%)</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--perf-green-dark);" id="legendGreenDesc">
+              Full mastery of foundational concepts. Student qualifies for enrichment exercises and peer-mentoring roles.
+            </p>
+          </div>
+
+          <div style="background:var(--perf-yellow-light); border:1px solid var(--perf-yellow-border); padding:16px; border-radius:var(--radius-md);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span class="badge badge-yellow" data-i18n="legendYellow">Yellow • Average (40% – 74%)</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--perf-yellow-dark);" id="legendYellowDesc">
+              Developing competency. Demonstrates core understanding but requires routine practice and guidance.
+            </p>
+          </div>
+
+          <div style="background:var(--perf-red-light); border:1px solid var(--perf-red-border); padding:16px; border-radius:var(--radius-md);">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span class="badge badge-red" data-i18n="legendRed">Red • Needs More Improvement (Below 40%)</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--perf-red-dark);" id="legendRedDesc">
+              Critical conceptual learning gap. Automatically flagged for early teacher intervention and targeted micro-remedial plans.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1320px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <strong data-i18n="appTitle">EduTrack</strong> &mdash; <span data-i18n="appSubtitle">Smart Performance Monitoring</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <span>Primary &amp; Middle Education Analytics &bull; Designed for Gujarat Primary Schools</span>
+        <a href="admin.html" style="color:var(--teal-primary); font-weight:600; text-decoration:none;"><i class="fa-solid fa-lock"></i> Admin Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let selectedRole = 'teacher';
+
+    function updateRoleLabel() {
+      const label = document.getElementById('selectedRoleLabel');
+      const lang = window.i18n.getLang();
+
+      const roleLabels = {
+        teacher: {
+          en: '<i class="fa-solid fa-chalkboard-user" style="color:var(--teal-primary);"></i> Teachers Portal',
+          gu: '<i class="fa-solid fa-chalkboard-user" style="color:var(--teal-primary);"></i> શિક્ષક પોર્ટલ (Teachers Portal)',
+          hi: '<i class="fa-solid fa-chalkboard-user" style="color:var(--teal-primary);"></i> शिक्षक पोर्टल (Teachers Portal)'
+        },
+        principal: {
+          en: '<i class="fa-solid fa-school" style="color:var(--navy-blue);"></i> School Principals Portal',
+          gu: '<i class="fa-solid fa-school" style="color:var(--navy-blue);"></i> શાળા આચાર્ય પોર્ટલ (Principals Portal)',
+          hi: '<i class="fa-solid fa-school" style="color:var(--navy-blue);"></i> प्रधानाचार्य पोर्टल (Principals Portal)'
+        },
+        coordinator: {
+          en: '<i class="fa-solid fa-chart-line" style="color:#0284c7;"></i> Block Resource Coordinators Portal',
+          gu: '<i class="fa-solid fa-chart-line" style="color:#0284c7;"></i> બ્લોક સંયોજક પોર્ટલ (BRC Portal)',
+          hi: '<i class="fa-solid fa-chart-line" style="color:#0284c7;"></i> ब्लॉक समन्वयक पोर्टल (BRC Portal)'
+        },
+        parent: {
+          en: '<i class="fa-solid fa-people-roof" style="color:#d97706;"></i> Parents Portal',
+          gu: '<i class="fa-solid fa-people-roof" style="color:#d97706;"></i> વાલી પોર્ટલ (Parents Portal)',
+          hi: '<i class="fa-solid fa-people-roof" style="color:#d97706;"></i> अभिभावक पोर्टल (Parents Portal)'
+        }
+      };
+
+      const langMap = roleLabels[selectedRole] || roleLabels.teacher;
+      label.innerHTML = langMap[lang] || langMap.en;
+
+      // Update explanatory text
+      if (lang === 'gu') {
+        document.getElementById('colorStandardTitle').textContent = "પ્રમાણભૂત શૈક્ષણિક પ્રદર્શન રંગ પ્રણાલી";
+        document.getElementById('colorStandardSub').textContent = "એજ્યુટ્રેક તમામ વિષયો અને ડેશબોર્ડ પર એકસમાન પારદર્શક ત્રિ-સ્તરીય ધોરણ લાગુ કરે છે:";
+        document.getElementById('legendGreenDesc').textContent = "પાયાના ખ્યાલો પર સંપૂર્ણ પકડ. વિદ્યાર્થી પ્રોત્સાહક પ્રવૃત્તિઓ માટે તૈયાર છે.";
+        document.getElementById('legendYellowDesc').textContent = "વિકાસશીલ ક્ષમતા. મુખ્ય ખ્યાલ સમજાયો છે પરંતુ નિયમિત પ્રેક્ટિસ જરૂરી છે.";
+        document.getElementById('legendRedDesc').textContent = "મહત્વપૂર્ણ અધ્યયન ખામી. તાત્કાલિક શિક્ષક હસ્તક્ષેપ અને ઉપચારાત્મક શિક્ષણ જરૂરી.";
+      } else if (lang === 'hi') {
+        document.getElementById('colorStandardTitle').textContent = "मानकीकृत शैक्षणिक प्रदर्शन रंग प्रणाली";
+        document.getElementById('colorStandardSub').textContent = "एड्यूट्रेक सभी विषयों और डैशबोर्ड पर एक समान पारदर्शी त्रि-स्तरीय मानक लागू करता है:";
+        document.getElementById('legendGreenDesc').textContent = "मूलभूत अवधारणाओं पर पूर्ण महारत। छात्र संवर्धन अभ्यासों के लिए योग्य है।";
+        document.getElementById('legendYellowDesc').textContent = "प्रगतिशील दक्षता। मुख्य समझ बनी है किंतु निरंतर अभ्यास की आवश्यकता है।";
+        document.getElementById('legendRedDesc').textContent = "गंभीर अध्ययन अंतराल। तत्काल शिक्षक मार्गदर्शन और उपचारात्मक योजना आवश्यक।";
+      } else {
+        document.getElementById('colorStandardTitle').textContent = "Standardized Academic Performance Color System";
+        document.getElementById('colorStandardSub').textContent = "EduTrack enforces a uniform, transparent three-tier mastery standard across all subjects and user dashboards:";
+        document.getElementById('legendGreenDesc').textContent = "Full mastery of foundational concepts. Student qualifies for enrichment exercises and peer-mentoring roles.";
+        document.getElementById('legendYellowDesc').textContent = "Developing competency. Demonstrates core understanding but requires routine practice and guidance.";
+        document.getElementById('legendRedDesc').textContent = "Critical conceptual learning gap. Automatically flagged for early teacher intervention and targeted micro-remedial plans.";
+      }
+    }
+
+    // Hook i18n change listener
+    window.onLanguageChanged = function(lang) {
+      updateRoleLabel();
+      showToast(lang === 'gu' ? 'વેબસાઇટની ભાષા ગુજરાતીમાં બદલાઈ ગઈ છે!' : (lang === 'hi' ? 'वेबसाइट की भाषा हिन्दी में बदल दी गई है!' : 'Website language set to English!'), 'info');
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const roleCards = document.querySelectorAll('.role-card');
+      const continueBtn = document.getElementById('btnContinueLogin');
+
+      roleCards.forEach(card => {
+        card.addEventListener('click', () => {
+          roleCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedRole = card.getAttribute('data-role');
+          updateRoleLabel();
+        });
+      });
+
+      continueBtn.addEventListener('click', () => {
+        window.location.href = `login.html?role=${selectedRole}`;
+      });
+
+      updateRoleLabel();
+    });
+  </script>
+
+</body>
+</html><script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="7b9c6766-8409-49e2-a9c0-bedcb370089a" data-app-host="app.netlify.com" data-account-tier="free"></script>

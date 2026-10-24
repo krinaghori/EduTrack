@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=7b9c6766-8409-49e2-a9c0-bedcb370089a
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Principal Dashboard – EduTrack School Performance</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Shared CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class='brand-link' href='/'>
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-school"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1 data-i18n="appTitle">EduTrack</h1>
+          <span data-i18n="principalPortal">Principal Administration Portal</span>
+        </div>
+      </a>
+
+      <div class="header-nav">
+        <!-- Prominent Language Selector -->
+        <div class="lang-select-wrap" title="Select Website Language / ભાષા પસંદ કરો / भाषा चुनें">
+          <i class="fa-solid fa-language"></i>
+          <select class="site-lang-select" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
+        </div>
+
+        <div class="header-user-badge">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Dr. Vikram Joshi</span>
+          <span class="role-tag" data-i18n="rolePrincipalTitle">Principal</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span data-i18n="logout">Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Breadcrumb Bar -->
+    <div class="breadcrumb-bar">
+      <a href='/'><i class="fa-solid fa-house"></i> <span data-i18n="homeBreadcrumb">Home</span></a>
+      <span class="separator">/</span>
+      <span class="current" data-i18n="principalBreadcrumb">Principal Dashboard</span>
+      <span class="separator">/</span>
+      <span class="current" id="breadcrumbClassLabel">All Classes (School-Wide)</span>
+    </div>
+
+    <!-- Dashboard Header with Class Selection Dropdown -->
+    <div class="dashboard-header">
+      <div class="header-title-box">
+        <h2 data-i18n="principalHeaderTitle">School-Wide Academic Oversight &amp; Classroom Monitoring</h2>
+        <p data-i18n="principalHeaderSub">Comprehensive institutional metrics, class comparisons, and targeted quality improvement interventions</p>
+      </div>
+      <div class="header-actions">
+        <!-- Class Selection Dropdown -->
+        <div style="display:flex; align-items:center; gap:8px; background:white; padding:6px 12px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:var(--shadow-sm);">
+          <i class="fa-solid fa-filter" style="color:var(--teal-primary);"></i>
+          <label for="classSelectDropdown" style="font-size:0.84rem; font-weight:700; color:var(--primary-navy); margin-bottom:0;" data-i18n="filterClassLabel">Filter Class:</label>
+          <select id="classSelectDropdown" class="form-control" style="width:auto; padding:6px 12px; font-weight:600;">
+            <option value="All" selected>All Classes (School Overview)</option>
+            <option value="Class 1">Class 1</option>
+            <option value="Class 2">Class 2</option>
+            <option value="Class 3">Class 3</option>
+            <option value="Class 4">Class 4</option>
+            <option value="Class 5">Class 5</option>
+            <option value="Class 6">Class 6</option>
+            <option value="Class 7">Class 7</option>
+            <option value="Class 8">Class 8</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- School & Classroom Core Metrics Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span id="metricEnrollmentTitle" data-i18n="statSchoolEnrollment">Total Students Tracked</span>
+          <h3 id="metricTotalStudents">384</h3>
+          <div class="stat-sub"><i class="fa-solid fa-school text-success"></i> <span data-i18n="acrossSections">Across 16 Active Sections</span></div>
+        </div>
+        <div class="stat-icon-box blue"><i class="fa-solid fa-users"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span id="metricAverageTitle" data-i18n="statSchoolAvg">Overall School Average</span>
+          <h3 id="metricOverallAvg">74.2%</h3>
+          <div class="stat-sub"><i class="fa-solid fa-arrow-trend-up text-success"></i> <span data-i18n="termTrend">+3.8% Term-over-Term</span></div>
+        </div>
+        <div class="stat-icon-box teal"><i class="fa-solid fa-chart-line"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span data-i18n="statSchoolExc">Performing Excellently</span>
+          <h3 id="metricExcellentCount" style="color:var(--perf-green);">162</h3>
+          <div class="stat-sub"><i class="fa-solid fa-circle-check text-success"></i> <span data-i18n="masteryStandard">&ge;75% Mastery Standard</span></div>
+        </div>
+        <div class="stat-icon-box green"><i class="fa-solid fa-award"></i></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-meta">
+          <span data-i18n="statSchoolSupport">Requiring Support</span>
+          <h3 id="metricSupportCount" style="color:var(--perf-red);">38</h3>
+          <div class="stat-sub"><i class="fa-solid fa-triangle-exclamation text-danger"></i> <span data-i18n="learningGapTag">&lt;40% Learning Gap</span></div>
+        </div>
+        <div class="stat-icon-box red"><i class="fa-solid fa-user-xmark"></i></div>
+      </div>
+    </div>
+
+    <!-- Comparative Analytics Charts Row -->
+    <div class="charts-grid-two">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 id="chartLeftTitle"><i class="fa-solid fa-chart-column" style="color:var(--navy-blue);"></i> <span data-i18n="classComparisonTitle">Classroom-Wise Academic Comparison</span></h3>
+            <p id="chartLeftSubtitle" data-i18n="classComparisonSub">Comparative average score across Class 1 to Class 8</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartPrincipalClassroom"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 id="chartRightTitle"><i class="fa-solid fa-chart-radar" style="color:var(--teal-primary);"></i> <span data-i18n="subjComparisonTitle">Subject-Wise Mastery Comparison</span></h3>
+            <p id="chartRightSubtitle" data-i18n="subjComparisonSub">Average performance across all 5 core primary subjects</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="chartPrincipalSubjects"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Class Drill-Down & Support Students -->
+    <div class="card" id="drilldownCard">
+      <div class="card-header">
+        <div>
+          <h3>
+            <i class="fa-solid fa-magnifying-glass-chart" style="color:var(--teal-primary);"></i> 
+            <span id="drilldownTitle">Class 4 Classroom Performance &amp; Students Requiring Academic Attention</span>
+          </h3>
+          <p id="drilldownSubtitle">Detailed classroom roster, weakest subject indicators, and recommended remedial priorities</p>
+        </div>
+        <div id="classMasteryPill" class="badge badge-yellow">
+          Class Mastery: 64% (Average)
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th data-i18n="colStudentNameId">Student Name &amp; ID</th>
+              <th data-i18n="colClassRoll">Class &amp; Roll</th>
+              <th data-i18n="colOverallAvg">Overall Average</th>
+              <th data-i18n="colStrongestSubj">Strongest Subject</th>
+              <th data-i18n="colWeakestSubj">Weakest Subject</th>
+              <th data-i18n="colStatus">Status</th>
+              <th data-i18n="colInstAction">Institutional Action Recommended</th>
+            </tr>
+          </thead>
+          <tbody id="principalStudentTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Institutional Suggestions for Classroom Performance -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3><i class="fa-solid fa-lightbulb" style="color:var(--perf-yellow);"></i> <span data-i18n="suggestionsTitle">Suggestions for Improving Classroom Performance</span></h3>
+          <p id="adminStrategySubtitle">Actionable administrative strategies generated for teacher-coordinator implementation:</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius-md); padding:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:#166534; margin-bottom:6px;">
+            <i class="fa-solid fa-chalkboard"></i> <span data-i18n="targetRemedialHour">Target Remedial Hour</span>
+          </h4>
+          <p style="font-size:0.84rem; color:#14532d; line-height:1.5;" data-i18n="targetRemedialHourDesc">
+            Assign 35 minutes every Tuesday and Thursday for small-group remedial instruction in foundational numeracy and Hindi matras.
+          </p>
+        </div>
+
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--radius-md); padding:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:#1e40af; margin-bottom:6px;">
+            <i class="fa-solid fa-book-reader"></i> <span data-i18n="flnPush">Foundational Literacy Push (FLN)</span>
+          </h4>
+          <p style="font-size:0.84rem; color:#1e3a8a; line-height:1.5;" data-i18n="flnPushDesc">
+            Organize daily 15-minute Barakhadi choral reading and sight word flashcard games in Class 3 and 4 language sessions.
+          </p>
+        </div>
+
+        <div style="background:#fefce8; border:1px solid #fef08a; border-radius:var(--radius-md); padding:18px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:#854d0e; margin-bottom:6px;">
+            <i class="fa-solid fa-people-arrows"></i> <span data-i18n="parentWorkshops">Parent Engagement Workshops</span>
+          </h4>
+          <p style="font-size:0.84rem; color:#713f12; line-height:1.5;" data-i18n="parentWorkshopsDesc">
+            Hold monthly weekend demonstration sessions teaching parents how to use household counting games to strengthen place value.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1320px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <strong>EduTrack</strong> &mdash; <span data-i18n="principalPortal">Principal Administration Portal</span>
+      </div>
+      <div id="footerPrincipalNote">
+        Integrated with Gujarat Primary School Standards &bull; Academic Year 2026-27
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let chartClassroom = null;
+    let chartSubjects = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('classSelectDropdown');
+      select.addEventListener('change', (e) => {
+        updatePrincipalDashboard(e.target.value);
+      });
+
+      updatePrincipalDashboard('All');
+    });
+
+    // Hook language change event
+    window.onLanguageChanged = function(lang) {
+      const currentClass = document.getElementById('classSelectDropdown').value;
+      updatePrincipalDashboard(currentClass);
+    };
+
+    function updatePrincipalDashboard(selectedClass) {
+      const lang = window.i18n ? window.i18n.getLang() : 'en';
+
+      // Update dropdown option label for 'All'
+      const select = document.getElementById('classSelectDropdown');
+      if (select && select.options[0]) {
+        select.options[0].textContent = window.i18n.t('allClasses');
+      }
+
+      document.getElementById('breadcrumbClassLabel').textContent = selectedClass === 'All' ? window.i18n.t('allClasses') : selectedClass;
+
+      // Update metrics based on class selection
+      let students = (selectedClass === 'All') 
+        ? window.EduTrack.students 
+        : window.EduTrack.getStudentsByClass(selectedClass);
+
+      if (students.length === 0) {
+        students = window.EduTrack.getStudentsByClass("Class 4"); // Fallback demonstration
+      }
+
+      let totalScore = 0;
+      let excCount = 0;
+      let helpCount = 0;
+
+      students.forEach(s => {
+        const scores = Object.values(s.subjects).map(sub => sub.marks);
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+        totalScore += avg;
+
+        if (avg >= window.EduTrack.thresholds.excellent) excCount++;
+        else if (avg < window.EduTrack.thresholds.average) helpCount++;
+      });
+
+      const overallAvg = Math.round(totalScore / students.length);
+      const perf = window.EduTrack.classifyPerformance(overallAvg);
+
+      if (selectedClass === 'All') {
+        document.getElementById('metricEnrollmentTitle').textContent = window.i18n.t('statSchoolEnrollment');
+        document.getElementById('metricTotalStudents').textContent = "384";
+        document.getElementById('metricAverageTitle').textContent = window.i18n.t('statSchoolAvg');
+        document.getElementById('metricOverallAvg').textContent = "74.2%";
+        document.getElementById('metricExcellentCount').textContent = "162";
+        document.getElementById('metricSupportCount').textContent = "38";
+
+        document.getElementById('drilldownTitle').textContent = window.i18n.t('schoolWideLedger');
+        document.getElementById('drilldownSubtitle').textContent = window.i18n.t('schoolWideLedgerSub');
+      } else {
+        const classEnrollmentText = lang === 'gu' ? `${selectedClass} નોંધણી` : (lang === 'hi' ? `${selectedClass} नामांकन` : `${selectedClass} Enrollment`);
+        const classAvgText = lang === 'gu' ? `${selectedClass} સરેરાશ` : (lang === 'hi' ? `${selectedClass} औसत` : `${selectedClass} Average`);
+        document.getElementById('metricEnrollmentTitle').textContent = classEnrollmentText;
+        document.getElementById('metricTotalStudents').textContent = students.length;
+        document.getElementById('metricAverageTitle').textContent = classAvgText;
+        document.getElementById('metricOverallAvg').textContent = `${overallAvg}%`;
+        document.getElementById('metricExcellentCount').textContent = excCount;
+        document.getElementById('metricSupportCount').textContent = helpCount;
+
+        const drillTitle = lang === 'gu' ? `${selectedClass} પ્રદર્શન અને સહાય અપેક્ષિત વિદ્યાર્થીઓ` :
+                          (lang === 'hi' ? `${selectedClass} प्रदर्शन एवं सहयोग अपेक्षित विद्यार्थी` : `${selectedClass} Performance & Students Requiring Support`);
+        const drillSub = lang === 'gu' ? `${selectedClass} નું વિશિષ્ટ વિષય શક્તિઓ અને ખામીઓ દર્શાવતું વિગતવાર નિદાન રજિસ્ટર` :
+                        (lang === 'hi' ? `${selectedClass} का विशिष्ट विषय क्षमताएं एवं कमियां दर्शाने वाला विस्तृत नैदानिक ​​लेज़र` : `Granular diagnostic ledger for ${selectedClass} showing specific subject strengths and deficits`);
+        document.getElementById('drilldownTitle').textContent = drillTitle;
+        document.getElementById('drilldownSubtitle').textContent = drillSub;
+      }
+
+      document.getElementById('classMasteryPill').className = `badge ${perf.badgeClass}`;
+      document.getElementById('classMasteryPill').textContent = `${window.i18n.t('masteryBand')}: ${overallAvg}% (${perf.category})`;
+
+      renderPrincipalTable(students);
+      renderPrincipalCharts(selectedClass);
+    }
+
+    function renderPrincipalTable(students) {
+      const tbody = document.getElementById('principalStudentTableBody');
+      const lang = window.i18n ? window.i18n.getLang() : 'en';
+
+      tbody.innerHTML = students.map(s => {
+        let maxSubj = "", minSubj = "";
+        let maxVal = -1, minVal = 999;
+        let sum = 0;
+
+        Object.entries(s.subjects).forEach(([subj, data]) => {
+          sum += data.marks;
+          if (data.marks > maxVal) { maxVal = data.marks; maxSubj = subj; }
+          if (data.marks < minVal) { minVal = data.marks; minSubj = subj; }
+        });
+
+        const avg = Math.round(sum / 5);
+        const perf = window.EduTrack.classifyPerformance(avg);
+        const maxSubjName = window.i18n ? window.i18n.tSubject(maxSubj) : maxSubj;
+        const minSubjName = window.i18n ? window.i18n.tSubject(minSubj) : minSubj;
+
+        let actionHtml = '';
+        if (minVal < window.EduTrack.thresholds.average) {
+          const remText = lang === 'gu' ? `${minSubjName} માં ઉપચારાત્મક યોજના જરૂરી` :
+                         (lang === 'hi' ? `${minSubjName} में उपचारात्मक योजना आवश्यक` : `Remedial plan required in ${minSubjName}`);
+          actionHtml = `<span class="badge badge-red"><i class="fa-solid fa-triangle-exclamation"></i> ${remText}</span>`;
+        } else {
+          actionHtml = `<span style="color:#065f46;">${window.i18n.t('maintainEnrichment')}</span>`;
+        }
+
+        return `
+          <tr>
+            <td>
+              <strong style="color:var(--primary-navy);">${s.name}</strong>
+              <div style="font-size:0.75rem; color:var(--text-light);">${s.id}</div>
+            </td>
+            <td><strong>${s.class}-${s.section}</strong> &bull; #${s.rollNo}</td>
+            <td>
+              <strong>${avg}%</strong>
+            </td>
+            <td>
+              <span style="color:#065f46; font-size:0.8rem; font-weight:600;">
+                <i class="fa-solid fa-circle-check text-success"></i> ${maxSubjName} (${maxVal}%)
+              </span>
+            </td>
+            <td>
+              <span style="color:#991b1b; font-size:0.8rem; font-weight:600;">
+                <i class="fa-solid fa-circle-exclamation text-danger"></i> ${minSubjName} (${minVal}%)
+              </span>
+            </td>
+            <td>
+              <span class="badge ${perf.badgeClass}">${perf.category}</span>
+            </td>
+            <td>
+              <div style="font-size:0.8rem; color:#334155;">
+                ${actionHtml}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPrincipalCharts(selectedClass) {
+      const lang = window.i18n ? window.i18n.getLang() : 'en';
+
+      // 1. Left Chart: Classroom Comparison
+      if (chartClassroom) chartClassroom.destroy();
+      const ctxLeft = document.getElementById('chartPrincipalClassroom').getContext('2d');
+
+      const classLabels = ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8'];
+      const classScores = [78, 76, 71, 65, 78, 70, 74, 82];
+      const classDatasetLabel = lang === 'gu' ? 'વર્ગ સરેરાશ %' : (lang === 'hi' ? 'कक्षा औसत %' : 'Class Average %');
+
+      chartClassroom = new Chart(ctxLeft, {
+        type: 'bar',
+        data: {
+          labels: classLabels,
+          datasets: [{
+            label: classDatasetLabel,
+            data: classScores,
+            backgroundColor: classLabels.map(l => l === selectedClass ? '#0d9488' : '#1e3a8a'),
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 40, max: 100, ticks: { callback: v => v + '%' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // 2. Right Chart: Subject-Wise Comparison
+      if (chartSubjects) chartSubjects.destroy();
+      const ctxRight = document.getElementById('chartPrincipalSubjects').getContext('2d');
+
+      const subjects = ["Mathematics", "English", "Gujarati", "Hindi", "EVS"];
+      const localizedSubjects = subjects.map(s => window.i18n ? window.i18n.tSubject(s) : s);
+      const subjScores = [66, 75, 70, 68, 84];
+
+      const radarLabel = selectedClass === 'All' 
+        ? (lang === 'gu' ? 'શાળા સરેરાશ' : (lang === 'hi' ? 'विद्यालय औसत' : 'School Average'))
+        : (lang === 'gu' ? `${selectedClass} સરેરાશ` : (lang === 'hi' ? `${selectedClass} औसत` : `${selectedClass} Average`));
+
+      chartSubjects = new Chart(ctxRight, {
+        type: 'radar',
+        data: {
+          labels: localizedSubjects,
+          datasets: [{
+            label: radarLabel,
+            data: subjScores,
+            backgroundColor: 'rgba(13, 148, 136, 0.25)',
+            borderColor: '#0d9488',
+            pointBackgroundColor: '#0d9488',
+            borderWidth: 2,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: { min: 40, max: 100, ticks: { stepSize: 20 } }
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="7b9c6766-8409-49e2-a9c0-bedcb370089a" data-app-host="app.netlify.com" data-account-tier="free"></script>

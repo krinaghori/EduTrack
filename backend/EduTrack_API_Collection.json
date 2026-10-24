@@ -1,0 +1,353 @@
+{
+  "info": {
+    "name": "EduTrack REST API Collection",
+    "description": "Comprehensive Postman API Collection for EduTrack Smart Student Performance Monitoring System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "authToken", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Backward Compatibility Status",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Authentication",
+      "item": [
+        {
+          "name": "Login (Teacher)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('authToken', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"teacher@edutrack.edu\",\n  \"password\": \"teach123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('adminToken', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@edutrack.edu\",\n  \"password\": \"AdminSecurePass@2026\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile (/me)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/auth/me",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }]
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mrs. Nita Shah\",\n  \"email\": \"nita.shah@edutrack.edu\",\n  \"password\": \"nita123\",\n  \"role\": \"teacher\",\n  \"assignedClass\": \"Class 4\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Students",
+      "item": [
+        {
+          "name": "List All Students",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/students"
+          }
+        },
+        {
+          "name": "Filter by Class 4",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/students?className=Class 4"
+          }
+        },
+        {
+          "name": "Search Students",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/students?search=Aarav"
+          }
+        },
+        {
+          "name": "Get Single Student",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/students/ET-2026-401"
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/students",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tanvi Joshi\",\n  \"rollNo\": \"15\",\n  \"class\": \"Class 4\",\n  \"section\": \"A\",\n  \"parentName\": \"Kamlesh Joshi\",\n  \"parentEmail\": \"kamlesh.joshi@example.com\",\n  \"attendance\": 92,\n  \"remarks\": \"Good progress in mathematics.\",\n  \"subjects\": {\n    \"Mathematics\": { \"total\": 100, \"marks\": 82, \"topics\": { \"Fractions & Decimals\": 80 } }\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Student Marks / Remarks",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/students/ET-2026-401",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Outstanding progress following remedial table drills.\",\n  \"attendance\": 96\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/students/ET-2026-401",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Coordinator Advice",
+      "item": [
+        {
+          "name": "Get Directives (Class 4)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/advice?className=Class 4"
+          }
+        },
+        {
+          "name": "Issue New Directive",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/advice",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"className\": \"Class 4\",\n  \"advice\": \"Assign 15 minutes of peer-led dot matrix practice for multiplication tables.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Directive Status",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/advice/ADV-01/status",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Implemented\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Parent Doubts & Questions",
+      "item": [
+        {
+          "name": "Get All Doubts",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/doubts"
+          }
+        },
+        {
+          "name": "Submit Parent Question",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/doubts",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"ET-2026-401\",\n  \"subject\": \"Mathematics\",\n  \"category\": \"Marks Clarification\",\n  \"question\": \"How can we assist Aarav with division remainders at home?\",\n  \"parentName\": \"Kishorbhai Patel\",\n  \"parentEmail\": \"parent@edutrack.edu\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Teacher Reply to Doubt",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/doubts/DOUBT-101/reply",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reply\": \"We recommend using small physical counters (beads or coins) to demonstrate equal sharing before formal long division.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Analytics & Comparison",
+      "item": [
+        {
+          "name": "Macro Overview",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analytics/overview"
+          }
+        },
+        {
+          "name": "Class Comparison (Class 1 to 8)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analytics/class-comparison"
+          }
+        },
+        {
+          "name": "Subject Comparison (5 Subjects)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analytics/subject-comparison"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Settings & Thresholds",
+      "item": [
+        {
+          "name": "Get Thresholds",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/settings/thresholds"
+          }
+        },
+        {
+          "name": "Update Thresholds",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/settings/thresholds",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"excellent\": 75,\n  \"average\": 40\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Admin Control",
+      "item": [
+        {
+          "name": "Admin Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/admin/dashboard",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }]
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/admin/users",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }]
+          }
+        },
+        {
+          "name": "Audit Logs",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/admin/audit-logs",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }]
+          }
+        },
+        {
+          "name": "Re-Seed Database",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/admin/seed",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }]
+          }
+        }
+      ]
+    }
+  ]
+}
